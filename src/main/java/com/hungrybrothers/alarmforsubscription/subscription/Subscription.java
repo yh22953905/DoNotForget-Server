@@ -10,7 +10,6 @@ import java.time.LocalDateTime;
 @Entity @AllArgsConstructor @NoArgsConstructor
 @Getter @Setter @EqualsAndHashCode(of = "id")
 public class Subscription {
-
     @Id @GeneratedValue
     private Long id;
 
@@ -19,5 +18,4 @@ public class Subscription {
     private Long cycle;
 
     private LocalDateTime nextReminderDateTime;
-
 }

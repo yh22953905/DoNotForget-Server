@@ -3,7 +3,6 @@ package com.hungrybrothers.alarmforsubscription.subscription;
 import com.hungrybrothers.alarmforsubscription.common.Const;
 import lombok.RequiredArgsConstructor;
 import lombok.extern.slf4j.Slf4j;
-import org.springframework.hateoas.EntityModel;
 import org.springframework.http.ResponseEntity;
 import org.springframework.stereotype.Controller;
 import org.springframework.web.bind.annotation.GetMapping;
@@ -18,7 +17,6 @@ import javax.persistence.EntityNotFoundException;
 @RequestMapping(Const.API_SUBSCRIPTION)
 @RequiredArgsConstructor
 public class SubscriptionController {
-
     private final SubscriptionRepository subscriptionRepository;
 
     @GetMapping(path = "/{id}")
@@ -28,5 +26,4 @@ public class SubscriptionController {
 
         return ResponseEntity.ok(subscription);
     }
-
 }
