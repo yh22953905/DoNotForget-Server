@@ -1,9 +1,8 @@
 package com.hungrybrothers.alarmforsubscription.common;
 
-import com.fasterxml.jackson.databind.ObjectMapper;
+import com.hungrybrothers.alarmforsubscription.account.AccountRepository;
 import com.hungrybrothers.alarmforsubscription.subscription.SubscriptionRepository;
 import org.junit.jupiter.api.Disabled;
-import org.modelmapper.ModelMapper;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.boot.test.autoconfigure.restdocs.AutoConfigureRestDocs;
 import org.springframework.boot.test.autoconfigure.web.servlet.AutoConfigureMockMvc;
@@ -21,11 +20,12 @@ import org.springframework.transaction.annotation.Transactional;
 @Disabled
 @Transactional
 public class CommonTest {
-
     @Autowired
     protected MockMvc mockMvc;
 
     @Autowired
-    protected SubscriptionRepository subscriptionRepository;
+    protected AccountRepository accountRepository;
 
+    @Autowired
+    protected SubscriptionRepository subscriptionRepository;
 }

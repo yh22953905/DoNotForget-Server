@@ -2,8 +2,12 @@ package com.hungrybrothers.alarmforsubscription.common;
 
 import com.fasterxml.jackson.databind.ObjectMapper;
 import com.hungrybrothers.alarmforsubscription.account.Account;
+import com.hungrybrothers.alarmforsubscription.account.AccountRepository;
 import org.modelmapper.ModelMapper;
 import org.modelmapper.convention.NameTokenizers;
+import org.springframework.beans.factory.annotation.Autowired;
+import org.springframework.boot.ApplicationArguments;
+import org.springframework.boot.ApplicationRunner;
 import org.springframework.boot.web.embedded.tomcat.TomcatServletWebServerFactory;
 import org.springframework.boot.web.servlet.server.ConfigurableServletWebServerFactory;
 import org.springframework.context.annotation.Bean;
@@ -14,7 +18,9 @@ import org.springframework.security.core.context.SecurityContextHolder;
 import org.springframework.security.crypto.factory.PasswordEncoderFactories;
 import org.springframework.security.crypto.password.PasswordEncoder;
 
+import java.util.HashSet;
 import java.util.Optional;
+import java.util.Set;
 
 @Configuration
 public class ApplicationConfig {
@@ -69,6 +75,30 @@ public class ApplicationConfig {
                 }
             } else {
                 return null;            }
+        };
+    }
+
+    @Bean
+    public ApplicationRunner applicationRunner() {
+        return new ApplicationRunner() {
+            @Autowired
+            AccountRepository accountRepository;
+
+            @Override
+            public void run(ApplicationArguments args) throws Exception {
+                Set<Account.Role> roles = new HashSet<>();
+                roles.add(Account.Role.ADMIN);
+                roles.add(Account.Role.CLIENT);
+
+                Account admin = Account.builder()
+                        .userId("admin@admin.com")
+                        .username("admin")
+                        .password("1234")
+                        .roles(roles)
+                        .build();
+
+                Account savedAdmin = accountRepository.save(admin);
+            }
         };
     }
 }
