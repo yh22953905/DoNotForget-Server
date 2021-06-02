@@ -40,7 +40,7 @@ public class SubscriptionController {
             , @PageableDefault(size = 100, page = 0, sort = "nextReminderDateTime") Pageable pageable
             , PagedResourcesAssembler<Subscription> assembler
     ) {
-        Page<Subscription> page = subscriptionRepository.findAllByAccount(pageable);
+        Page<Subscription> page = subscriptionRepository.findAll(pageable);
 
         PagedModel<EntityModel<Subscription>> entityModels = assembler.toModel(page, subscription -> CommonResource.modelOf(subscription, subscription.getId(), SubscriptionController.class));
 

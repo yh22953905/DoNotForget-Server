@@ -50,10 +50,10 @@ public class JwtTokenProvider {
     public Authentication getAuthentication(String token) {
         String userId = "";
 
-        userId = getUserId(token);
-
         if (token.equals(testToken)) {
-            userId = String.valueOf(accountRepository.findByUserId(adminId).get().getId());
+            userId = adminId;
+        } else {
+            userId = getUserId(token);
         }
 
         UserDetails userDetails = accountService.loadUserByUsername(userId);
@@ -69,7 +69,7 @@ public class JwtTokenProvider {
     }
 
     public String resolveToken(HttpServletRequest request) {
-        return request.getHeader(Const.JWT_TOKEN);
+        return request.getHeader(Const.X_AUTH_TOKEN);
     }
 
     public Boolean validateToken(String jwtToken) {

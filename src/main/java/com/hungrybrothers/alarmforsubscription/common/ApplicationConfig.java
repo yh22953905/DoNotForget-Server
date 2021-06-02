@@ -6,12 +6,14 @@ import com.hungrybrothers.alarmforsubscription.account.AccountRepository;
 import org.modelmapper.ModelMapper;
 import org.modelmapper.convention.NameTokenizers;
 import org.springframework.beans.factory.annotation.Autowired;
+import org.springframework.beans.factory.annotation.Value;
 import org.springframework.boot.ApplicationArguments;
 import org.springframework.boot.ApplicationRunner;
 import org.springframework.boot.web.embedded.tomcat.TomcatServletWebServerFactory;
 import org.springframework.boot.web.servlet.server.ConfigurableServletWebServerFactory;
 import org.springframework.context.annotation.Bean;
 import org.springframework.context.annotation.Configuration;
+import org.springframework.context.annotation.PropertySource;
 import org.springframework.data.domain.AuditorAware;
 import org.springframework.security.core.Authentication;
 import org.springframework.security.core.context.SecurityContextHolder;
@@ -23,7 +25,11 @@ import java.util.Optional;
 import java.util.Set;
 
 @Configuration
+@PropertySource("classpath:application.yml")
 public class ApplicationConfig {
+    @Value("${jwt.admin-id}")
+    private String adminId;
+
     @Bean
     public ModelMapper modelMapper() {
         ModelMapper modelMapper = new ModelMapper();
@@ -91,7 +97,7 @@ public class ApplicationConfig {
                 roles.add(Account.Role.CLIENT);
 
                 Account admin = Account.builder()
-                        .userId("admin@admin.com")
+                        .userId(adminId)
                         .username("admin")
                         .password("1234")
                         .roles(roles)

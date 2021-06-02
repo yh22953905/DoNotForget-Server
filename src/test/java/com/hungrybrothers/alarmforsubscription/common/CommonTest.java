@@ -4,10 +4,12 @@ import com.hungrybrothers.alarmforsubscription.account.AccountRepository;
 import com.hungrybrothers.alarmforsubscription.subscription.SubscriptionRepository;
 import org.junit.jupiter.api.Disabled;
 import org.springframework.beans.factory.annotation.Autowired;
+import org.springframework.beans.factory.annotation.Value;
 import org.springframework.boot.test.autoconfigure.restdocs.AutoConfigureRestDocs;
 import org.springframework.boot.test.autoconfigure.web.servlet.AutoConfigureMockMvc;
 import org.springframework.boot.test.context.SpringBootTest;
 import org.springframework.context.annotation.Import;
+import org.springframework.context.annotation.PropertySource;
 import org.springframework.test.context.ActiveProfiles;
 import org.springframework.test.web.servlet.MockMvc;
 import org.springframework.transaction.annotation.Transactional;
@@ -19,6 +21,7 @@ import org.springframework.transaction.annotation.Transactional;
 @ActiveProfiles("test")
 @Disabled
 @Transactional
+@PropertySource("classpath:application.yml")
 public class CommonTest {
     @Autowired
     protected MockMvc mockMvc;
@@ -28,4 +31,7 @@ public class CommonTest {
 
     @Autowired
     protected SubscriptionRepository subscriptionRepository;
+
+    @Value("${jwt.test-token}")
+    protected String testToken;
 }
