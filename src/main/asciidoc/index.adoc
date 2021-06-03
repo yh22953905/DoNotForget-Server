@@ -81,13 +81,13 @@ HUNGRY-BROTHERS;
 operation::social-login[snippets='http-request,http-response']
 
 
-[[resources-batteries-master]]
-== 배터리 정보 (배터리의 제조사, 수입일자, 상태, 사용 여부 등의 데이터)
+[[resources-subscriptions]]
+== 구독 정보
 
-[[resources-battery-master-read]]
-=== 하나의 배터리 정보 조회 성공
+[[resources-subscription-read]]
+=== 하나의 구독 정보 조회 성공
 
-`GET` 요청을 사용해서 하나의 배터리 정보를 조회할 수 있다.
+`GET` 요청을 사용해서 하나의 구독 정보를 조회할 수 있다.
 
-operation::read-battery-master[snippets='http-request,http-response']
+operation::read-subscription[snippets='http-request,http-response']
 
