@@ -1,7 +1,9 @@
 package com.hungrybrothers.alarmforsubscription.subscription;
 
+import com.hungrybrothers.alarmforsubscription.account.Account;
 import com.hungrybrothers.alarmforsubscription.common.CommonResource;
 import com.hungrybrothers.alarmforsubscription.common.Const;
+import com.hungrybrothers.alarmforsubscription.account.CurrentAccount;
 import lombok.RequiredArgsConstructor;
 import lombok.extern.slf4j.Slf4j;
 import org.springframework.data.domain.Page;
@@ -16,7 +18,6 @@ import org.springframework.http.ResponseEntity;
 import org.springframework.stereotype.Controller;
 import org.springframework.web.bind.annotation.GetMapping;
 import org.springframework.web.bind.annotation.PathVariable;
-import org.springframework.web.bind.annotation.RequestBody;
 import org.springframework.web.bind.annotation.RequestMapping;
 
 import javax.persistence.EntityNotFoundException;
@@ -35,10 +36,11 @@ public class SubscriptionController {
         return ResponseEntity.ok(subscription);
     }
 
-    @GetMapping
-    public ResponseEntity readSubscriptionsByUser(@RequestBody SubscriptionDto subscriptionDto
-            , @PageableDefault(size = 100, page = 0, sort = "nextReminderDateTime") Pageable pageable
+    @GetMapping(path = "/account")
+    public ResponseEntity readSubscriptionsByAccount(
+            @PageableDefault(size = 100, page = 0, sort = "nextReminderDateTime") Pageable pageable
             , PagedResourcesAssembler<Subscription> assembler
+            , @CurrentAccount Account account
     ) {
         Page<Subscription> page = subscriptionRepository.findAll(pageable);
 

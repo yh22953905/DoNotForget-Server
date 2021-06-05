@@ -45,7 +45,8 @@ public class SubscriptionControllerTest extends CommonTest {
     @Test
     public void readSubscriptionsByUser() throws Exception {
         mockMvc.perform(
-                get(Const.API_SUBSCRIPTION)
+                get(Const.API_SUBSCRIPTION + "/account")
+                        .header(Const.X_AUTH_TOKEN, testToken)
                         .contentType(MediaType.APPLICATION_JSON)
                         .accept(MediaTypes.HAL_JSON)
         )

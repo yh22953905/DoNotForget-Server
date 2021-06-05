@@ -92,18 +92,18 @@ public class ApplicationConfig {
 
             @Override
             public void run(ApplicationArguments args) throws Exception {
-                Set<Account.Role> roles = new HashSet<>();
-                roles.add(Account.Role.ADMIN);
-                roles.add(Account.Role.CLIENT);
-
-                Account admin = Account.builder()
-                        .userId(adminId)
-                        .username("admin")
-                        .password("1234")
-                        .roles(roles)
-                        .build();
-
-                Account savedAdmin = accountRepository.save(admin);
+//                Set<Account.Role> roles = new HashSet<>();
+//                roles.add(Account.Role.ADMIN);
+//                roles.add(Account.Role.CLIENT);
+//
+//                Account admin = Account.builder()
+//                        .userId(adminId)
+//                        .username("admin")
+//                        .password("1234")
+//                        .roles(roles)
+//                        .build();
+//
+//                Account savedAdmin = accountRepository.save(admin);
             }
         };
     }
