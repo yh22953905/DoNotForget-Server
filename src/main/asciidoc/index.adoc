@@ -91,3 +91,16 @@ operation::social-login[snippets='http-request,http-response']
 
 operation::read-subscription[snippets='http-request,http-response']
 
+[[resources-subscriptions-read]]
+=== 구독 정보 리스트 조회 성공
+
+`GET` 요청을 사용해서 구독 정보 리스트를 조회할 수 있다.
+
+operation::read-subscriptions[snippets='http-request,http-response']
+
+[[resources-subscriptions-create]]
+=== 하나의 구독 정보 생성 성공
+
+`POST` 요청을 사용해서 하나의 구독 정보를 생성할 수 있다.
+
+operation::create-subscription[snippets='http-request,http-response']

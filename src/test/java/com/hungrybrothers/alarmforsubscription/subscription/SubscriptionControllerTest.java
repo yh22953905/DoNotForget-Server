@@ -11,6 +11,7 @@ import java.time.LocalDateTime;
 
 import static org.springframework.restdocs.mockmvc.MockMvcRestDocumentation.document;
 import static org.springframework.test.web.servlet.request.MockMvcRequestBuilders.get;
+import static org.springframework.test.web.servlet.request.MockMvcRequestBuilders.post;
 import static org.springframework.test.web.servlet.result.MockMvcResultHandlers.print;
 import static org.springframework.test.web.servlet.result.MockMvcResultMatchers.status;
 
@@ -24,6 +25,11 @@ public class SubscriptionControllerTest extends CommonTest {
                 .cycle(1000L * 60 * 60 * 24 * 30)
                 .nextReminderDateTime(LocalDateTime.now())
                 .build();
+
+        subscription.setCreateUser(admin);
+        subscription.setUpdateUser(admin);
+        subscription.setCreateDateTime(LocalDateTime.now());
+        subscription.setUpdateDateTime(LocalDateTime.now());
 
         Subscription savedSubscription = subscriptionRepository.save(subscription);
         testSubscriptionId = savedSubscription.getId();
@@ -51,6 +57,27 @@ public class SubscriptionControllerTest extends CommonTest {
                         .accept(MediaTypes.HAL_JSON)
         )
                 .andExpect(status().isOk())
-                .andDo(print());
+                .andDo(print())
+                .andDo(document("read-subscriptions"));
+    }
+
+    @Test
+    public void createSubscription() throws Exception {
+        SubscriptionDto subscriptionDto = SubscriptionDto.builder()
+                .url("http://www.google.com")
+                .cycle(1000L * 60 * 60 * 24 * 30)
+//                .nextReminderDateTime(LocalDateTime.now())
+                .build();
+
+        mockMvc.perform(
+                post(Const.API_SUBSCRIPTION)
+                        .header(Const.X_AUTH_TOKEN, testToken)
+                        .contentType(MediaType.APPLICATION_JSON)
+                        .accept(MediaTypes.HAL_JSON)
+                        .content(objectMapper.writeValueAsString(subscriptionDto))
+        )
+                .andExpect(status().isOk())
+                .andDo(print())
+                .andDo(document("create-subscription"));
     }
 }

@@ -1,5 +1,6 @@
 package com.hungrybrothers.alarmforsubscription.common;
 
+import com.fasterxml.jackson.databind.ObjectMapper;
 import com.hungrybrothers.alarmforsubscription.account.Account;
 import com.hungrybrothers.alarmforsubscription.account.AccountRepository;
 import com.hungrybrothers.alarmforsubscription.subscription.SubscriptionRepository;
@@ -36,6 +37,9 @@ public class CommonTest {
 
     @Autowired
     protected SubscriptionRepository subscriptionRepository;
+
+    @Autowired
+    protected ObjectMapper objectMapper;
 
     @Value("${jwt.test-token}")
     protected String testToken;

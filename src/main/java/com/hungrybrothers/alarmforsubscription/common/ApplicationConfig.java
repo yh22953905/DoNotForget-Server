@@ -2,6 +2,7 @@ package com.hungrybrothers.alarmforsubscription.common;
 
 import com.fasterxml.jackson.databind.ObjectMapper;
 import com.hungrybrothers.alarmforsubscription.account.Account;
+import com.hungrybrothers.alarmforsubscription.account.AccountAdapter;
 import com.hungrybrothers.alarmforsubscription.account.AccountRepository;
 import org.modelmapper.ModelMapper;
 import org.modelmapper.convention.NameTokenizers;
@@ -20,9 +21,7 @@ import org.springframework.security.core.context.SecurityContextHolder;
 import org.springframework.security.crypto.factory.PasswordEncoderFactories;
 import org.springframework.security.crypto.password.PasswordEncoder;
 
-import java.util.HashSet;
 import java.util.Optional;
-import java.util.Set;
 
 @Configuration
 @PropertySource("classpath:application.yml")
@@ -74,7 +73,8 @@ public class ApplicationConfig {
                 Authentication authentication = optionalAuthentication.get();
 
                 if (!authentication.getPrincipal().equals("anonymousUser")) {
-                    Account account = (Account) authentication.getPrincipal();
+                    AccountAdapter accountAdapter = (AccountAdapter) authentication.getPrincipal();
+                    Account account = accountAdapter.getAccount();
                     return Optional.of(account);
                 } else {
                     return null;

@@ -6,6 +6,7 @@ import com.hungrybrothers.alarmforsubscription.common.Const;
 import com.hungrybrothers.alarmforsubscription.account.CurrentAccount;
 import lombok.RequiredArgsConstructor;
 import lombok.extern.slf4j.Slf4j;
+import org.modelmapper.ModelMapper;
 import org.springframework.data.domain.Page;
 import org.springframework.data.domain.Pageable;
 import org.springframework.data.web.PageableDefault;
@@ -16,9 +17,7 @@ import org.springframework.hateoas.LinkRelation;
 import org.springframework.hateoas.PagedModel;
 import org.springframework.http.ResponseEntity;
 import org.springframework.stereotype.Controller;
-import org.springframework.web.bind.annotation.GetMapping;
-import org.springframework.web.bind.annotation.PathVariable;
-import org.springframework.web.bind.annotation.RequestMapping;
+import org.springframework.web.bind.annotation.*;
 
 import javax.persistence.EntityNotFoundException;
 
@@ -28,12 +27,17 @@ import javax.persistence.EntityNotFoundException;
 @RequiredArgsConstructor
 public class SubscriptionController {
     private final SubscriptionRepository subscriptionRepository;
+    private final ModelMapper modelMapper;
 
     @GetMapping(path = "/{id}")
     public ResponseEntity readSubscription(@PathVariable Long id) {
         Subscription subscription = subscriptionRepository.findById(id).orElseThrow(EntityNotFoundException::new);
 
-        return ResponseEntity.ok(subscription);
+        EntityModel<Subscription> entityModel = CommonResource.modelOf(subscription, subscription.getId(), SubscriptionController.class);
+
+        entityModel.add(Link.of("resources-subscription-read").withRel(LinkRelation.of("profile")));
+
+        return ResponseEntity.ok(entityModel);
     }
 
     @GetMapping(path = "/account")
@@ -42,12 +46,23 @@ public class SubscriptionController {
             , PagedResourcesAssembler<Subscription> assembler
             , @CurrentAccount Account account
     ) {
-        Page<Subscription> page = subscriptionRepository.findAll(pageable);
+        Page<Subscription> page = subscriptionRepository.findAllByCreateUser(account, pageable);
 
         PagedModel<EntityModel<Subscription>> entityModels = assembler.toModel(page, subscription -> CommonResource.modelOf(subscription, subscription.getId(), SubscriptionController.class));
 
         entityModels.add(Link.of("resources-subscriptions-read").withRel(LinkRelation.of("profile")));
 
-        return ResponseEntity.ok(page);
+        return ResponseEntity.ok(entityModels);
+    }
+
+    @PostMapping
+    public ResponseEntity createSubscription(@RequestBody SubscriptionDto subscriptionDto) {
+        Subscription subscription = modelMapper.map(subscriptionDto, Subscription.class);
+
+        Subscription savedSubscription = subscriptionRepository.save(subscription);
+
+        EntityModel<Subscription> entityModel = CommonResource.modelOf(savedSubscription, savedSubscription.getId(), SubscriptionController.class);
+
+        return ResponseEntity.ok(entityModel);
     }
 }
