@@ -3,13 +3,8 @@ package com.hungrybrothers.alarmforsubscription.common;
 import com.fasterxml.jackson.databind.ObjectMapper;
 import com.hungrybrothers.alarmforsubscription.account.Account;
 import com.hungrybrothers.alarmforsubscription.account.AccountAdapter;
-import com.hungrybrothers.alarmforsubscription.account.AccountRepository;
 import org.modelmapper.ModelMapper;
 import org.modelmapper.convention.NameTokenizers;
-import org.springframework.beans.factory.annotation.Autowired;
-import org.springframework.beans.factory.annotation.Value;
-import org.springframework.boot.ApplicationArguments;
-import org.springframework.boot.ApplicationRunner;
 import org.springframework.boot.web.embedded.tomcat.TomcatServletWebServerFactory;
 import org.springframework.boot.web.servlet.server.ConfigurableServletWebServerFactory;
 import org.springframework.context.annotation.Bean;
@@ -26,9 +21,6 @@ import java.util.Optional;
 @Configuration
 @PropertySource("classpath:application.yml")
 public class ApplicationConfig {
-    @Value("${jwt.admin-id}")
-    private String adminId;
-
     @Bean
     public ModelMapper modelMapper() {
         ModelMapper modelMapper = new ModelMapper();
@@ -41,20 +33,17 @@ public class ApplicationConfig {
 
     @Bean
     public ObjectMapper objectMapper() {
-        ObjectMapper objectMapper = new ObjectMapper();
-        return objectMapper;
+        return new ObjectMapper();
     }
 
     @Bean
     public PasswordEncoder passwordEncoder() {
-        PasswordEncoder delegatingPasswordEncoder = PasswordEncoderFactories.createDelegatingPasswordEncoder();
-        return delegatingPasswordEncoder;
+        return PasswordEncoderFactories.createDelegatingPasswordEncoder();
     }
 
     @Bean
     public GracefulShutdown gracefulShutdown() {
-        GracefulShutdown gracefulShutdown = new GracefulShutdown();
-        return gracefulShutdown;
+        return new GracefulShutdown();
     }
 
     @Bean
@@ -77,33 +66,10 @@ public class ApplicationConfig {
                     Account account = accountAdapter.getAccount();
                     return Optional.of(account);
                 } else {
-                    return null;
+                    return Optional.empty();
                 }
             } else {
-                return null;            }
-        };
-    }
-
-    @Bean
-    public ApplicationRunner applicationRunner() {
-        return new ApplicationRunner() {
-            @Autowired
-            AccountRepository accountRepository;
-
-            @Override
-            public void run(ApplicationArguments args) throws Exception {
-//                Set<Account.Role> roles = new HashSet<>();
-//                roles.add(Account.Role.ADMIN);
-//                roles.add(Account.Role.CLIENT);
-//
-//                Account admin = Account.builder()
-//                        .userId(adminId)
-//                        .username("admin")
-//                        .password("1234")
-//                        .roles(roles)
-//                        .build();
-//
-//                Account savedAdmin = accountRepository.save(admin);
+                return Optional.empty();
             }
         };
     }

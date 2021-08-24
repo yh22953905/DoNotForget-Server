@@ -41,33 +41,7 @@ public class CommonTest {
     @Autowired
     protected ObjectMapper objectMapper;
 
-    @Value("${jwt.test-token}")
-    protected String testToken;
-
-    @Value("${jwt.admin-id}")
-    private String adminId;
-
-    @Value("${jwt.admin-username}")
-    private String adminUsername;
-
-    @Value("${jwt.admin-password}")
-    private String adminPassword;
-
     protected Account admin;
 
-    @BeforeEach
-    public void init() {
-        Set<Account.Role> roles = new HashSet<>();
-        roles.add(Account.Role.ADMIN);
-        roles.add(Account.Role.CLIENT);
-
-        Account account = Account.builder()
-                .userId(adminId)
-                .username(adminUsername)
-                .password(adminPassword)
-                .roles(roles)
-                .build();
-
-        admin = accountRepository.save(account);
-    }
+    protected String testToken;
 }
