@@ -70,15 +70,15 @@ HUNGRY-BROTHERS;
 [[resources]]
 = 리소스
 
-//[[resources-sign]]
-//== 소셜 로그인
-//
-//[[resources-sign-post]]
-//=== 소셜 로그인 (등록되지 않은 회원일 때 회원가입 포함)
-//
-//`POST` 요청을 사용해서 소셜 로그인을 할 수 있다.
-//
-//operation::social-login[snippets='http-request,http-response']
+[[resources-sign]]
+== 회원
+
+[[resources-sign-post]]
+=== 회원 가입
+
+`POST` 요청을 사용해서 회원 가입을 할 수 있다.
+
+operation::sign-up[snippets='http-request,http-response']
 
 
 [[resources-subscriptions]]

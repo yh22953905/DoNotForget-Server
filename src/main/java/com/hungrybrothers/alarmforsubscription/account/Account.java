@@ -2,18 +2,20 @@ package com.hungrybrothers.alarmforsubscription.account;
 
 import com.fasterxml.jackson.annotation.JsonProperty;
 import lombok.*;
+import org.hibernate.Hibernate;
 import org.springframework.security.core.GrantedAuthority;
 import org.springframework.security.core.authority.SimpleGrantedAuthority;
 import org.springframework.security.core.userdetails.UserDetails;
 
 import javax.persistence.*;
 import java.util.Collection;
+import java.util.Objects;
 import java.util.Set;
 import java.util.stream.Collectors;
 
 @Builder
 @AllArgsConstructor @NoArgsConstructor
-@Getter @Setter @EqualsAndHashCode(of = "id")
+@Getter @Setter
 @Entity
 public class Account implements UserDetails {
     @Id @GeneratedValue
@@ -30,10 +32,7 @@ public class Account implements UserDetails {
     @JsonProperty(access = JsonProperty.Access.WRITE_ONLY)
     @ElementCollection(fetch = FetchType.EAGER)
     @Enumerated(EnumType.STRING)
-    private Set<Role> roles;
-
-    @JsonProperty(access = JsonProperty.Access.WRITE_ONLY)
-    private Provider provider;
+    private Set<AccountRole> roles;
 
     @JsonProperty(access = JsonProperty.Access.WRITE_ONLY)
     @Override
@@ -67,11 +66,16 @@ public class Account implements UserDetails {
         return true;
     }
 
-    public enum Provider {
-        NAVER, KAKAO, GOOGLE
+    @Override
+    public boolean equals(Object o) {
+        if (this == o) return true;
+        if (o == null || Hibernate.getClass(this) != Hibernate.getClass(o)) return false;
+        Account account = (Account) o;
+        return id != null && Objects.equals(id, account.id);
     }
 
-    public enum Role {
-        ADMIN, CLIENT
+    @Override
+    public int hashCode() {
+        return getClass().hashCode();
     }
 }

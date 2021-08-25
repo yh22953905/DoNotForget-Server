@@ -1,6 +1,7 @@
 package com.hungrybrothers.alarmforsubscription.security;
 
 import com.hungrybrothers.alarmforsubscription.account.Account;
+import com.hungrybrothers.alarmforsubscription.account.AccountRole;
 import com.hungrybrothers.alarmforsubscription.common.Const;
 import org.springframework.boot.actuate.autoconfigure.security.servlet.EndpointRequest;
 import org.springframework.boot.autoconfigure.security.servlet.PathRequest;
@@ -37,6 +38,6 @@ public class SecurityConfig extends WebSecurityConfigurerAdapter {
                 .mvcMatchers(Const.API_SIGN + "/**").permitAll()
                 .mvcMatchers(Const.ERROR_URL).permitAll()
                 .requestMatchers(EndpointRequest.toAnyEndpoint()).permitAll()
-                .anyRequest().hasRole(Account.Role.CLIENT.name());
+                .anyRequest().hasRole(AccountRole.CLIENT.name());
     }
 }
