@@ -3,7 +3,10 @@ package com.hungrybrothers.alarmforsubscription.sign;
 import com.hungrybrothers.alarmforsubscription.account.Account;
 import com.hungrybrothers.alarmforsubscription.account.AccountRepository;
 import com.hungrybrothers.alarmforsubscription.account.AccountRole;
+import com.hungrybrothers.alarmforsubscription.exception.UserIdPasswordException;
+import com.hungrybrothers.alarmforsubscription.security.JwtTokenProvider;
 import lombok.RequiredArgsConstructor;
+import lombok.SneakyThrows;
 import org.springframework.security.crypto.password.PasswordEncoder;
 import org.springframework.stereotype.Service;
 import org.springframework.transaction.annotation.Transactional;
@@ -17,20 +20,33 @@ import java.util.Set;
 public class SignService {
     private final AccountRepository accountRepository;
     private final PasswordEncoder passwordEncoder;
+    private final JwtTokenProvider jwtTokenProvider;
 
-    public Account signUp(SignRequest signRequest) {
-        accountRepository.findByUserId(signRequest.getUserId()).ifPresent(user -> {
+    public Account signUp(SignUpRequest signUpRequest) {
+        accountRepository.findByUserId(signUpRequest.getUserId()).ifPresent(user -> {
             throw new RuntimeException(); // TODO AccountAlreadyExistsException
         });
 
         Set<AccountRole> roles = new HashSet<>();
-        roles.add(AccountRole.valueOf(signRequest.getAccountRole()));
+        roles.add(AccountRole.valueOf(signUpRequest.getAccountRole()));
 
         return accountRepository.save(Account.builder()
-            .userId(signRequest.getUserId())
-            .username(signRequest.getUsername())
-            .password(passwordEncoder.encode(signRequest.getPassword()))
+            .userId(signUpRequest.getUserId())
+            .username(signUpRequest.getUsername())
+            .password(passwordEncoder.encode(signUpRequest.getPassword()))
             .roles(roles)
             .build());
+    }
+
+    @SneakyThrows
+    public String signIn(SignInRequest signInRequest) {
+        Account account = accountRepository.findByUserId(signInRequest.getUserId())
+            .orElseThrow(UserIdPasswordException::new);
+
+        if (!passwordEncoder.matches(signInRequest.getPassword(), account.getPassword())) {
+            throw new UserIdPasswordException();
+        }
+
+        return jwtTokenProvider.createJwtToken(account);
     }
 }

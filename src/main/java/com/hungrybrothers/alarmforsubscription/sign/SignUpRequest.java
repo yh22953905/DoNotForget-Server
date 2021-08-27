@@ -7,7 +7,7 @@ import lombok.NoArgsConstructor;
 
 @Data @Builder
 @NoArgsConstructor @AllArgsConstructor
-public class SignRequest {
+public class SignUpRequest {
     // TODO Validation
     private String userId;
 

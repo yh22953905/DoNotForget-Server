@@ -39,7 +39,7 @@ public class SubscriptionControllerTest extends CommonTest {
     public void readSubscription() throws Exception {
         mockMvc.perform(
                 get(Const.API_SUBSCRIPTION + "/{id}", testSubscriptionId)
-                        .header(Const.X_AUTH_TOKEN, testToken)
+                        .header(Const.REQUEST_HEADER_AUTHORIZATION, testToken)
                         .contentType(MediaType.APPLICATION_JSON)
                         .accept(MediaTypes.HAL_JSON)
         )
@@ -52,7 +52,7 @@ public class SubscriptionControllerTest extends CommonTest {
     public void readSubscriptionsByUser() throws Exception {
         mockMvc.perform(
                 get(Const.API_SUBSCRIPTION + "/account")
-                        .header(Const.X_AUTH_TOKEN, testToken)
+                        .header(Const.REQUEST_HEADER_AUTHORIZATION, testToken)
                         .contentType(MediaType.APPLICATION_JSON)
                         .accept(MediaTypes.HAL_JSON)
         )
@@ -71,7 +71,7 @@ public class SubscriptionControllerTest extends CommonTest {
 
         mockMvc.perform(
                 post(Const.API_SUBSCRIPTION)
-                        .header(Const.X_AUTH_TOKEN, testToken)
+                        .header(Const.REQUEST_HEADER_AUTHORIZATION, testToken)
                         .contentType(MediaType.APPLICATION_JSON)
                         .accept(MediaTypes.HAL_JSON)
                         .content(objectMapper.writeValueAsString(subscriptionRequest))

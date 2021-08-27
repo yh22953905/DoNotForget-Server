@@ -16,9 +16,14 @@ public class SignController {
     private final SignService signService;
 
     @PostMapping("/up")
-    public ResponseEntity<Account> signUp(@RequestBody SignRequest signRequest) {
-        Account signUpAccount = signService.signUp(signRequest);
+    public ResponseEntity<Account> signUp(@RequestBody SignUpRequest signUpRequest) {
+        Account signUpAccount = signService.signUp(signUpRequest);
 
         return ResponseEntity.ok(signUpAccount);
+    }
+
+    @PostMapping("/in")
+    public ResponseEntity<String> signIn(@RequestBody SignInRequest signInRequest) {
+        return ResponseEntity.ok(signService.signIn(signInRequest));
     }
 }

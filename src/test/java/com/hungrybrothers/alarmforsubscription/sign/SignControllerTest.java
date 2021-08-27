@@ -22,7 +22,7 @@ public class SignControllerTest extends CommonTest {
     @Test
     @DisplayName("회원 가입 - Created")
     void signUpCreated() throws Exception {
-        SignRequest signRequest = SignRequest.builder()
+        SignUpRequest signUpRequest = SignUpRequest.builder()
             .userId(TEST_USER_ID)
             .username(TEST_USERNAME)
             .password(TEST_PASSWORD)
@@ -32,7 +32,7 @@ public class SignControllerTest extends CommonTest {
         mockMvc.perform(post(Const.API_SIGN + "/up")
                 .contentType(MediaType.APPLICATION_JSON)
                 .accept(MediaTypes.HAL_JSON)
-                .content(objectMapper.writeValueAsString(signRequest)))
+                .content(objectMapper.writeValueAsString(signUpRequest)))
             .andExpect(status().isOk())
             .andDo(print())
             .andDo(document("sign-up"))
