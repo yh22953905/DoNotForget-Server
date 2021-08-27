@@ -11,7 +11,7 @@ import java.time.LocalDateTime;
 @Builder
 @NoArgsConstructor
 @AllArgsConstructor
-public class SubscriptionDto {
+public class SubscriptionRequest {
     private Long id;
 
     private String url;

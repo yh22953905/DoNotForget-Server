@@ -56,8 +56,8 @@ public class SubscriptionController {
     }
 
     @PostMapping
-    public ResponseEntity createSubscription(@RequestBody SubscriptionDto subscriptionDto) {
-        Subscription subscription = modelMapper.map(subscriptionDto, Subscription.class);
+    public ResponseEntity createSubscription(@RequestBody SubscriptionRequest subscriptionRequest) {
+        Subscription subscription = modelMapper.map(subscriptionRequest, Subscription.class);
 
         Subscription savedSubscription = subscriptionRepository.save(subscription);
 

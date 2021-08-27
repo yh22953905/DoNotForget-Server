@@ -63,7 +63,7 @@ public class SubscriptionControllerTest extends CommonTest {
 
     @Test
     public void createSubscription() throws Exception {
-        SubscriptionDto subscriptionDto = SubscriptionDto.builder()
+        SubscriptionRequest subscriptionRequest = SubscriptionRequest.builder()
                 .url("http://www.google.com")
                 .cycle(1000L * 60 * 60 * 24 * 30)
 //                .nextReminderDateTime(LocalDateTime.now())
@@ -74,7 +74,7 @@ public class SubscriptionControllerTest extends CommonTest {
                         .header(Const.X_AUTH_TOKEN, testToken)
                         .contentType(MediaType.APPLICATION_JSON)
                         .accept(MediaTypes.HAL_JSON)
-                        .content(objectMapper.writeValueAsString(subscriptionDto))
+                        .content(objectMapper.writeValueAsString(subscriptionRequest))
         )
                 .andExpect(status().isOk())
                 .andDo(print())
