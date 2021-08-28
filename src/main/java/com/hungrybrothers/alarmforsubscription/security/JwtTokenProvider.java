@@ -3,6 +3,7 @@ package com.hungrybrothers.alarmforsubscription.security;
 import com.auth0.jwt.JWT;
 import com.auth0.jwt.algorithms.Algorithm;
 import com.hungrybrothers.alarmforsubscription.account.Account;
+import com.hungrybrothers.alarmforsubscription.account.AccountAdapter;
 import com.hungrybrothers.alarmforsubscription.account.AccountRepository;
 import com.hungrybrothers.alarmforsubscription.common.Const;
 import com.hungrybrothers.alarmforsubscription.exception.UserAuthenticationException;
@@ -51,10 +52,10 @@ public class JwtTokenProvider {
     }
 
     public Authentication getAuthentication(String jwtToken) {
-        Account account = accountRepository.findByUserId(getEmail(jwtToken))
-            .orElseThrow(UserAuthenticationException::new);
+        AccountAdapter accountAdapter = new AccountAdapter(accountRepository.findByUserId(getEmail(jwtToken))
+            .orElseThrow(UserAuthenticationException::new));
 
-        return new UsernamePasswordAuthenticationToken(account, "", account.getAuthorities());
+        return new UsernamePasswordAuthenticationToken(accountAdapter, "", accountAdapter.getAuthorities());
     }
 
     public boolean validateToken(String jwtToken) {

@@ -15,7 +15,7 @@ import static org.springframework.test.web.servlet.result.MockMvcResultMatchers.
 import static org.springframework.test.web.servlet.result.MockMvcResultMatchers.status;
 
 public class SignControllerTest extends CommonTest {
-    private static final String TEST_USER_ID = "yh22953905@gmail.com";
+    private static final String TEST_USER_ID = "user_id@email.com";
     private static final String TEST_USERNAME = "username";
     private static final String TEST_PASSWORD = "password";
 
