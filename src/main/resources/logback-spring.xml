@@ -27,6 +27,12 @@
     <springProperty name="user" source="spring.datasource.username"/>
     <springProperty name="password" source="spring.datasource.password"/>
 
+    <springProfile name="slack-logging">
+        <!-- Slack Appender -->
+        <appender name="SLACK" class="com.hungrybrothers.alarmforsubscription.log.SlackAppender">
+        </appender>
+    </springProfile>
+
     <springProfile name="console-logging">
         <!-- Console Appender -->
         <appender name="CONSOLE" class="ch.qos.logback.core.ConsoleAppender">
@@ -59,6 +65,10 @@
 
     <!-- root레벨 설정 -->
     <root level="${LOG_LEVEL}">
+        <springProfile name="slack-logging">
+            <appender-ref ref="SLACK"/>
+        </springProfile>
+
         <springProfile name="console-logging">
             <appender-ref ref="CONSOLE"/>
         </springProfile>
