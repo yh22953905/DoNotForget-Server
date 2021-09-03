@@ -105,9 +105,16 @@ operation::read-subscription[snippets='http-request,http-response']
 
 operation::read-subscriptions[snippets='http-request,http-response']
 
-[[resources-subscriptions-create]]
+[[resources-subscription-create]]
 === 하나의 구독 정보 생성 성공
 
 `POST` 요청을 사용해서 하나의 구독 정보를 생성할 수 있다.
 
 operation::create-subscription[snippets='http-request,http-response']
+
+[[resources-subscription-update]]
+=== 하나의 구독 정보 수정 성공
+
+`PATCH` 요청을 사용해서 하나의 구독 정보를 생성할 수 있다.
+
+operation::update-subscription[snippets='http-request,http-response']

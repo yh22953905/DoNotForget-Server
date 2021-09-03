@@ -1,19 +1,22 @@
 package com.hungrybrothers.alarmforsubscription.subscription;
 
-import com.hungrybrothers.alarmforsubscription.common.CommonTest;
-import com.hungrybrothers.alarmforsubscription.common.Const;
+import static org.assertj.core.api.Assertions.*;
+import static org.springframework.restdocs.mockmvc.MockMvcRestDocumentation.*;
+import static org.springframework.test.web.servlet.request.MockMvcRequestBuilders.*;
+import static org.springframework.test.web.servlet.result.MockMvcResultHandlers.*;
+import static org.springframework.test.web.servlet.result.MockMvcResultMatchers.*;
+
+import java.time.LocalDateTime;
+
+import javax.persistence.EntityNotFoundException;
+
 import org.junit.jupiter.api.BeforeEach;
 import org.junit.jupiter.api.Test;
 import org.springframework.hateoas.MediaTypes;
 import org.springframework.http.MediaType;
 
-import java.time.LocalDateTime;
-
-import static org.springframework.restdocs.mockmvc.MockMvcRestDocumentation.document;
-import static org.springframework.test.web.servlet.request.MockMvcRequestBuilders.get;
-import static org.springframework.test.web.servlet.request.MockMvcRequestBuilders.post;
-import static org.springframework.test.web.servlet.result.MockMvcResultHandlers.print;
-import static org.springframework.test.web.servlet.result.MockMvcResultMatchers.status;
+import com.hungrybrothers.alarmforsubscription.common.CommonTest;
+import com.hungrybrothers.alarmforsubscription.common.Const;
 
 public class SubscriptionControllerTest extends CommonTest {
     private Long testSubscriptionId;
@@ -79,5 +82,31 @@ public class SubscriptionControllerTest extends CommonTest {
                 .andExpect(status().isOk())
                 .andDo(print())
                 .andDo(document("create-subscription"));
+    }
+
+    @Test
+    public void updateSubscription() throws Exception {
+        SubscriptionRequest subscriptionRequest = SubscriptionRequest.builder()
+            .url("http://www.naver.com")
+            .cycle(1000L * 60 * 60 * 24 * 60)
+            // .nextReminderDateTime(LocalDateTime.now())
+            .build();
+
+        mockMvc.perform(
+                patch(Const.API_SUBSCRIPTION + "/{id}", testSubscriptionId)
+                    .header(Const.REQUEST_HEADER_AUTHORIZATION, jwtToken)
+                    .contentType(MediaType.APPLICATION_JSON)
+                    .accept(MediaTypes.HAL_JSON)
+                    .content(objectMapper.writeValueAsString(subscriptionRequest))
+            )
+            .andExpect(status().isOk())
+            .andDo(print())
+            .andDo(document("update-subscription"));
+
+        Subscription subscription = subscriptionRepository.findById(testSubscriptionId)
+            .orElseThrow(EntityNotFoundException::new);
+
+        assertThat(subscription.getUrl()).isEqualTo(subscriptionRequest.getUrl());
+        assertThat(subscription.getCycle()).isEqualTo(subscriptionRequest.getCycle());
     }
 }
