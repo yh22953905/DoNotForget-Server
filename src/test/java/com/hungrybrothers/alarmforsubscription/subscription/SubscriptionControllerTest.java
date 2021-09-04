@@ -11,6 +11,7 @@ import java.time.LocalDateTime;
 import javax.persistence.EntityNotFoundException;
 
 import org.junit.jupiter.api.BeforeEach;
+import org.junit.jupiter.api.DisplayName;
 import org.junit.jupiter.api.Test;
 import org.springframework.hateoas.MediaTypes;
 import org.springframework.http.MediaType;
@@ -39,6 +40,7 @@ public class SubscriptionControllerTest extends CommonTest {
     }
 
     @Test
+    @DisplayName("하나의 구독 정보 조회 성공")
     public void readSubscription() throws Exception {
         mockMvc.perform(
                 get(Const.API_SUBSCRIPTION + "/{id}", testSubscriptionId)
@@ -52,6 +54,7 @@ public class SubscriptionControllerTest extends CommonTest {
     }
 
     @Test
+    @DisplayName("구독 정보 리스트 조회 성공")
     public void readSubscriptionsByUser() throws Exception {
         mockMvc.perform(
                 get(Const.API_SUBSCRIPTION + "/account")
@@ -65,6 +68,7 @@ public class SubscriptionControllerTest extends CommonTest {
     }
 
     @Test
+    @DisplayName("하나의 구독 정보 생성 성공")
     public void createSubscription() throws Exception {
         SubscriptionRequest subscriptionRequest = SubscriptionRequest.builder()
                 .url("http://www.google.com")
@@ -85,6 +89,7 @@ public class SubscriptionControllerTest extends CommonTest {
     }
 
     @Test
+    @DisplayName("하나의 구독 정보 수정 성공")
     public void updateSubscription() throws Exception {
         SubscriptionRequest subscriptionRequest = SubscriptionRequest.builder()
             .url("http://www.naver.com")
