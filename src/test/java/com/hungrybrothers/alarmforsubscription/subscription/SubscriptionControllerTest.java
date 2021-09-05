@@ -114,4 +114,20 @@ public class SubscriptionControllerTest extends CommonTest {
         assertThat(subscription.getUrl()).isEqualTo(subscriptionRequest.getUrl());
         assertThat(subscription.getCycle()).isEqualTo(subscriptionRequest.getCycle());
     }
+
+    @Test
+    @DisplayName("하나의 구독 정보 삭제 성공")
+    public void deleteSubscription() throws Exception {
+        mockMvc.perform(
+                delete(Const.API_SUBSCRIPTION + "/{id}", testSubscriptionId)
+                    .header(Const.REQUEST_HEADER_AUTHORIZATION, jwtToken)
+                    .contentType(MediaType.APPLICATION_JSON)
+                    .accept(MediaTypes.HAL_JSON)
+            )
+            .andExpect(status().isOk())
+            .andDo(print())
+            .andDo(document("delete-subscription"));
+
+        assertThat(subscriptionRepository.existsById(testSubscriptionId)).isFalse();
+    }
 }

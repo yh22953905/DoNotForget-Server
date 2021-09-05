@@ -20,4 +20,10 @@ public class SubscriptionService {
 
 		subscriptionRepository.save(subscription);
 	}
+
+	public void deleteSubscription(Long id) {
+		Subscription subscription = subscriptionRepository.findById(id).orElseThrow(EntityNotFoundException::new);
+
+		subscriptionRepository.delete(subscription);
+	}
 }

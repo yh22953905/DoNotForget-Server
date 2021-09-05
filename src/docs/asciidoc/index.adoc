@@ -115,6 +115,13 @@ operation::create-subscription[snippets='http-request,http-response']
 [[resources-subscription-update]]
 === 하나의 구독 정보 수정 성공
 
-`PATCH` 요청을 사용해서 하나의 구독 정보를 생성할 수 있다.
+`PATCH` 요청을 사용해서 하나의 구독 정보를 수정할 수 있다.
 
 operation::update-subscription[snippets='http-request,http-response']
+
+[[resources-subscription-delete]]
+=== 하나의 구독 정보 삭제 성공
+
+`DELETE` 요청을 사용해서 하나의 구독 정보를 삭제할 수 있다.
+
+operation::delete-subscription[snippets='http-request,http-response']
