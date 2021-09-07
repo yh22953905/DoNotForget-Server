@@ -18,6 +18,7 @@ import org.springframework.http.MediaType;
 
 import com.hungrybrothers.alarmforsubscription.common.CommonTest;
 import com.hungrybrothers.alarmforsubscription.common.Const;
+import com.hungrybrothers.alarmforsubscription.security.JwtProperties;
 
 public class SubscriptionControllerTest extends CommonTest {
     private Long testSubscriptionId;
@@ -44,7 +45,7 @@ public class SubscriptionControllerTest extends CommonTest {
     public void readSubscription() throws Exception {
         mockMvc.perform(
                 get(Const.API_SUBSCRIPTION + "/{id}", testSubscriptionId)
-                        .header(Const.REQUEST_HEADER_AUTHORIZATION, jwtToken)
+                        .header(JwtProperties.REQUEST_HEADER_AUTHORIZATION, jwtToken)
                         .contentType(MediaType.APPLICATION_JSON)
                         .accept(MediaTypes.HAL_JSON)
         )
@@ -58,7 +59,7 @@ public class SubscriptionControllerTest extends CommonTest {
     public void readSubscriptionsByUser() throws Exception {
         mockMvc.perform(
                 get(Const.API_SUBSCRIPTION + "/account")
-                        .header(Const.REQUEST_HEADER_AUTHORIZATION, jwtToken)
+                        .header(JwtProperties.REQUEST_HEADER_AUTHORIZATION, jwtToken)
                         .contentType(MediaType.APPLICATION_JSON)
                         .accept(MediaTypes.HAL_JSON)
         )
@@ -78,7 +79,7 @@ public class SubscriptionControllerTest extends CommonTest {
 
         mockMvc.perform(
                 post(Const.API_SUBSCRIPTION)
-                        .header(Const.REQUEST_HEADER_AUTHORIZATION, jwtToken)
+                        .header(JwtProperties.REQUEST_HEADER_AUTHORIZATION, jwtToken)
                         .contentType(MediaType.APPLICATION_JSON)
                         .accept(MediaTypes.HAL_JSON)
                         .content(objectMapper.writeValueAsString(subscriptionRequest))
@@ -99,7 +100,7 @@ public class SubscriptionControllerTest extends CommonTest {
 
         mockMvc.perform(
                 patch(Const.API_SUBSCRIPTION + "/{id}", testSubscriptionId)
-                    .header(Const.REQUEST_HEADER_AUTHORIZATION, jwtToken)
+                    .header(JwtProperties.REQUEST_HEADER_AUTHORIZATION, jwtToken)
                     .contentType(MediaType.APPLICATION_JSON)
                     .accept(MediaTypes.HAL_JSON)
                     .content(objectMapper.writeValueAsString(subscriptionRequest))
@@ -120,7 +121,7 @@ public class SubscriptionControllerTest extends CommonTest {
     public void deleteSubscription() throws Exception {
         mockMvc.perform(
                 delete(Const.API_SUBSCRIPTION + "/{id}", testSubscriptionId)
-                    .header(Const.REQUEST_HEADER_AUTHORIZATION, jwtToken)
+                    .header(JwtProperties.REQUEST_HEADER_AUTHORIZATION, jwtToken)
                     .contentType(MediaType.APPLICATION_JSON)
                     .accept(MediaTypes.HAL_JSON)
             )

@@ -44,6 +44,6 @@ public class SecurityConfig extends WebSecurityConfigurerAdapter {
 
         http
             .addFilter(new JwtAuthenticationFilter(authenticationManager(), jwtTokenProvider, objectMapper))
-            .addFilter(new JwtAuthorizationFilter(authenticationManager()));
+            .addFilter(new JwtAuthorizationFilter(authenticationManager(), jwtTokenProvider));
     }
 }
