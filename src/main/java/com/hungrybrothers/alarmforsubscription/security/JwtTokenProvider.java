@@ -41,7 +41,16 @@ public class JwtTokenProvider {
             .withClaim(JwtProperties.KEY_USER_ID, account.getUserId())
             .withClaim(JwtProperties.KEY_ROLES, roles) // TODO role -> roles
             .withIssuedAt(now)
-            .withExpiresAt(new Date(now.getTime() + JwtProperties.TOKEN_EXPIRATION_TIME))
+            .withExpiresAt(new Date(now.getTime() + JwtProperties.JWT_TOKEN_EXPIRATION_TIME))
+            .sign(Algorithm.HMAC256(secretKey)); // TODO HMAC256 -> HMAC512
+    }
+
+    public String createRefreshToken() {
+        Date now = new Date();
+
+        return JWT.create()
+            .withIssuedAt(now)
+            .withExpiresAt(new Date(now.getTime() + JwtProperties.REFRESH_TOKEN_EXPIRATION_TIME))
             .sign(Algorithm.HMAC256(secretKey));
     }
 
@@ -65,6 +74,6 @@ public class JwtTokenProvider {
     }
 
     private String getEmail(String jwtToken) {
-        return JWT.decode(jwtToken).getClaim("userId").asString();
+        return JWT.decode(jwtToken).getClaim(JwtProperties.KEY_USER_ID).asString();
     }
 }

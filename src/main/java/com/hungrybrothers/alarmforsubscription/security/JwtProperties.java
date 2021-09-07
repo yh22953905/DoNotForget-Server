@@ -1,7 +1,8 @@
 package com.hungrybrothers.alarmforsubscription.security;
 
 public class JwtProperties {
-	public static final Long TOKEN_EXPIRATION_TIME = 1000L * 60 * 60 * 24 * 30;
+	public static final Long JWT_TOKEN_EXPIRATION_TIME = 1000L * 60 * 60 * 24 * 30;
+	public static final Long REFRESH_TOKEN_EXPIRATION_TIME = 1000L * 60 * 60 * 24 * 90;
 	public static final String KEY_USER_ID = "userId";
 	public static final String KEY_ROLES = "role";
 
