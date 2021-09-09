@@ -8,9 +8,18 @@ import org.springframework.web.bind.annotation.ExceptionHandler;
 
 import java.nio.file.AccessDeniedException;
 
-@ControllerAdvice
+import com.auth0.jwt.exceptions.JWTVerificationException;
+
 @Slf4j
+@ControllerAdvice
 public class CommonExceptionHandler {
+    @ExceptionHandler(JWTVerificationException.class)
+    public ResponseEntity<ErrorResponse> handleJWTVerificationException(final JWTVerificationException e) {
+        log.error("handleJWTVerificationException", e);
+        final ErrorResponse response = ErrorResponse.of(ErrorCode.INVALID_INPUT_VALUE);
+        return new ResponseEntity<>(response, HttpStatus.UNAUTHORIZED);
+    }
+
     @ExceptionHandler(AccessDeniedException.class)
     public ResponseEntity<ErrorResponse> handleAccessDeniedException(final AccessDeniedException e) {
         log.error("handleAccessDeniedException", e);

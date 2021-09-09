@@ -1,21 +1,28 @@
 package com.hungrybrothers.alarmforsubscription.sign;
 
-import com.hungrybrothers.alarmforsubscription.account.Account;
-import com.hungrybrothers.alarmforsubscription.account.AccountRole;
-import com.hungrybrothers.alarmforsubscription.common.CommonTest;
-import com.hungrybrothers.alarmforsubscription.common.Const;
+import static org.assertj.core.api.Assertions.*;
+import static org.junit.jupiter.api.Assertions.*;
+import static org.springframework.restdocs.mockmvc.MockMvcRestDocumentation.*;
+import static org.springframework.test.web.servlet.request.MockMvcRequestBuilders.*;
+import static org.springframework.test.web.servlet.result.MockMvcResultHandlers.*;
+import static org.springframework.test.web.servlet.result.MockMvcResultMatchers.*;
+
+import java.util.Objects;
+
+import org.jetbrains.annotations.NotNull;
 import org.junit.jupiter.api.DisplayName;
 import org.junit.jupiter.api.Test;
 import org.springframework.hateoas.MediaTypes;
 import org.springframework.http.MediaType;
 import org.springframework.security.core.userdetails.UsernameNotFoundException;
+import org.springframework.test.web.servlet.ResultActions;
 
-import static org.assertj.core.api.Assertions.assertThat;
-import static org.springframework.restdocs.mockmvc.MockMvcRestDocumentation.document;
-import static org.springframework.test.web.servlet.request.MockMvcRequestBuilders.post;
-import static org.springframework.test.web.servlet.result.MockMvcResultHandlers.print;
-import static org.springframework.test.web.servlet.result.MockMvcResultMatchers.jsonPath;
-import static org.springframework.test.web.servlet.result.MockMvcResultMatchers.status;
+import com.auth0.jwt.exceptions.JWTVerificationException;
+import com.hungrybrothers.alarmforsubscription.account.Account;
+import com.hungrybrothers.alarmforsubscription.account.AccountRole;
+import com.hungrybrothers.alarmforsubscription.common.CommonTest;
+import com.hungrybrothers.alarmforsubscription.common.Const;
+import com.hungrybrothers.alarmforsubscription.exception.ErrorCode;
 
 public class SignControllerTest extends CommonTest {
     private static final String TEST_USER_ID2 = "user_id@email.com";
@@ -68,5 +75,64 @@ public class SignControllerTest extends CommonTest {
             .orElseThrow(() -> new UsernameNotFoundException(signInRequest.getUserId()));
 
         assertThat(account.getRefreshToken()).isNotEmpty();
+    }
+
+    @Test
+    @DisplayName("토큰 갱신 - OK")
+    void refreshToken() throws Exception {
+        savedAccount.setRefreshToken(jwtTokenProvider.createRefreshToken());
+        Account updatedAccount = accountRepository.save(savedAccount);
+
+        RefreshTokenRequest request = RefreshTokenRequest.builder()
+            .refreshToken(updatedAccount.getRefreshToken())
+            .build();
+
+        getRefreshTokenActions(request)
+            .andExpect(status().isOk())
+            .andDo(document("refresh-token"))
+            .andExpect(jsonPath("$.jwtToken").isNotEmpty())
+            .andExpect(jsonPath("$.refreshToken").isNotEmpty());
+
+        Account account = accountRepository.findByRefreshToken(updatedAccount.getRefreshToken())
+            .orElseThrow(() -> new UsernameNotFoundException(updatedAccount.getRefreshToken()));
+
+        assertThat(account.getRefreshToken()).isNotEmpty();
+    }
+
+    @Test
+    @DisplayName("토큰 갱신 - 만료된 refresh token")
+    void refreshTokenInvalid() throws Exception {
+        String invalidRefreshToken = "eyJ0eXAiOiJKV1QiLCJhbGciOiJIUzI1NiJ9.eyJyb2xlIjpbIkNMSUVOVCIsIkFETUlOIl0sImV4cCI6MTY0MDY1MzYxOSwidXNlcklkIjoieWgyMjk1MzkwNUBnbWFpbC5jb20iLCJpYXQiOjE2NDMyNDU2MTl9.uSSKly2ksZVvY1N8k1aMt5DzVcWjnVsol7OpcARgdxQ";
+
+        RefreshTokenRequest request = RefreshTokenRequest.builder()
+            .refreshToken(invalidRefreshToken)
+            .build();
+
+        getRefreshTokenActions(request)
+            .andExpect(result -> assertTrue(result.getResolvedException() instanceof JWTVerificationException))
+            .andExpect(result -> assertEquals(Objects.requireNonNull(result.getResolvedException()).getMessage(), ErrorCode.INVALID_TOKEN.getMessage()));
+    }
+
+    @Test
+    @DisplayName("토큰 갱신 - 빈 문자열")
+    void refreshTokenEmpty() throws Exception {
+        String invalidRefreshToken = "";
+
+        RefreshTokenRequest request = RefreshTokenRequest.builder()
+            .refreshToken(invalidRefreshToken)
+            .build();
+
+        getRefreshTokenActions(request)
+            .andExpect(result -> assertTrue(result.getResolvedException() instanceof JWTVerificationException))
+            .andExpect(result -> assertEquals(Objects.requireNonNull(result.getResolvedException()).getMessage(), ErrorCode.INVALID_TOKEN.getMessage()));
+    }
+
+    @NotNull
+    private ResultActions getRefreshTokenActions(RefreshTokenRequest request) throws Exception {
+        return mockMvc.perform(post(Const.API_SIGN + "/refresh-token")
+                .contentType(MediaType.APPLICATION_JSON)
+                .accept(MediaTypes.HAL_JSON)
+                .content(objectMapper.writeValueAsString(request)))
+            .andDo(print());
     }
 }

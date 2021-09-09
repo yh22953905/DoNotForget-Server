@@ -18,10 +18,13 @@ import com.auth0.jwt.algorithms.Algorithm;
 import com.hungrybrothers.alarmforsubscription.account.Account;
 import com.hungrybrothers.alarmforsubscription.account.AccountAdapter;
 import com.hungrybrothers.alarmforsubscription.account.AccountRepository;
+import com.hungrybrothers.alarmforsubscription.common.Const;
 import com.hungrybrothers.alarmforsubscription.exception.UserAuthenticationException;
 
 import lombok.RequiredArgsConstructor;
+import lombok.extern.slf4j.Slf4j;
 
+@Slf4j
 @Component
 @RequiredArgsConstructor
 public class JwtTokenProvider {
@@ -68,9 +71,17 @@ public class JwtTokenProvider {
     }
 
     public boolean validateToken(String jwtToken) {
-        if (!StringUtils.hasText(jwtToken)) return false;
+        if (!StringUtils.hasText(jwtToken)) {
+            log.error(Const.LOG_MESSAGE_TOKEN_INVALID);
+            return false;
+        }
 
-        return !JWT.decode(jwtToken).getExpiresAt().before(new Date());
+        if (JWT.decode(jwtToken).getExpiresAt().before(new Date())) {
+            log.error(Const.LOG_MESSAGE_TOKEN_EXPIRED);
+            return false;
+        }
+
+        return true;
     }
 
     private String getEmail(String jwtToken) {
