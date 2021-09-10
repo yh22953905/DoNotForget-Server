@@ -87,6 +87,13 @@ operation::sign-up[snippets='http-request,http-response']
 
 operation::sign-in[snippets='http-request,http-response']
 
+[[resources-refresh-token]]
+=== 토큰 갱신
+
+`POST` 요청을 사용해서 토큰을 갱신할 수 있다.
+
+operation::refresh-token[snippets='http-request,http-response']
+
 
 [[resources-subscriptions]]
 == 구독 정보
