@@ -7,6 +7,8 @@ import com.hungrybrothers.alarmforsubscription.account.AccountRole;
 import com.hungrybrothers.alarmforsubscription.security.JwtProperties;
 import com.hungrybrothers.alarmforsubscription.security.JwtTokenProvider;
 import com.hungrybrothers.alarmforsubscription.subscription.SubscriptionRepository;
+import com.hungrybrothers.alarmforsubscription.utils.MailUtils;
+
 import org.junit.jupiter.api.BeforeEach;
 import org.junit.jupiter.api.Disabled;
 import org.springframework.beans.factory.annotation.Autowired;
@@ -53,6 +55,9 @@ public class CommonTest {
 
     @Autowired
     protected JwtTokenProvider jwtTokenProvider;
+
+    @Autowired
+    protected MailUtils mailUtils;
 
     protected Account savedAccount;
 

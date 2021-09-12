@@ -3,6 +3,7 @@ package com.hungrybrothers.alarmforsubscription.exception;
 import lombok.extern.slf4j.Slf4j;
 import org.springframework.http.HttpStatus;
 import org.springframework.http.ResponseEntity;
+import org.springframework.mail.MailException;
 import org.springframework.web.bind.annotation.ControllerAdvice;
 import org.springframework.web.bind.annotation.ExceptionHandler;
 
@@ -13,6 +14,13 @@ import com.auth0.jwt.exceptions.JWTVerificationException;
 @Slf4j
 @ControllerAdvice
 public class CommonExceptionHandler {
+    @ExceptionHandler(MailException.class)
+    public ResponseEntity<ErrorResponse> handleMailException(final MailException e) {
+        log.error("handleMailException", e);
+        final ErrorResponse response = ErrorResponse.of(ErrorCode.INVALID_INPUT_VALUE);
+        return new ResponseEntity<>(response, HttpStatus.UNAUTHORIZED);
+    }
+
     @ExceptionHandler(JWTVerificationException.class)
     public ResponseEntity<ErrorResponse> handleJWTVerificationException(final JWTVerificationException e) {
         log.error("handleJWTVerificationException", e);
