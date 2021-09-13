@@ -1,10 +1,13 @@
 package com.hungrybrothers.alarmforsubscription.sign;
 
 import com.hungrybrothers.alarmforsubscription.account.Account;
+import com.hungrybrothers.alarmforsubscription.account.AccountAdapter;
 import com.hungrybrothers.alarmforsubscription.common.Const;
 import lombok.RequiredArgsConstructor;
 import org.springframework.http.ResponseEntity;
+import org.springframework.security.core.annotation.AuthenticationPrincipal;
 import org.springframework.stereotype.Controller;
+import org.springframework.web.bind.annotation.PatchMapping;
 import org.springframework.web.bind.annotation.PostMapping;
 import org.springframework.web.bind.annotation.RequestBody;
 import org.springframework.web.bind.annotation.RequestMapping;
@@ -25,5 +28,14 @@ public class SignController {
     @PostMapping("/refresh-token")
     public ResponseEntity<SignInResponse> refreshToken(@RequestBody RefreshTokenRequest request) {
         return ResponseEntity.ok(signService.refreshToken(request));
+    }
+
+    @PatchMapping("/email")
+    public ResponseEntity<Object> verifyEmail(@RequestBody VerifyEmailRequest request, @AuthenticationPrincipal AccountAdapter accountAdapter) {
+        Account account = accountAdapter.getAccount();
+
+        signService.verifyEmail(request, account);
+
+        return ResponseEntity.ok().build();
     }
 }

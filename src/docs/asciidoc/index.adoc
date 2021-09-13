@@ -87,12 +87,19 @@ operation::sign-up[snippets='http-request,http-response']
 
 operation::sign-in[snippets='http-request,http-response']
 
-[[resources-refresh-token]]
+[[resources-sign-refresh-token]]
 === 토큰 갱신
 
 `POST` 요청을 사용해서 토큰을 갱신할 수 있다.
 
 operation::refresh-token[snippets='http-request,http-response']
+
+[[resources-sign-verify-email]]
+=== 이메일 검증
+
+`PATCH` 요청을 사용해서 이메일을 검증할 수 있다.
+
+operation::verify-email[snippets='http-request,http-response']
 
 
 [[resources-subscriptions]]

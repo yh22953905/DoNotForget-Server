@@ -14,6 +14,13 @@ import com.auth0.jwt.exceptions.JWTVerificationException;
 @Slf4j
 @ControllerAdvice
 public class CommonExceptionHandler {
+    @ExceptionHandler(VerifyCodeException.class)
+    public ResponseEntity<ErrorResponse> handleVerifyCodeException(final VerifyCodeException e) {
+        log.error("handleVerifyCodeException", e);
+        final ErrorResponse response = ErrorResponse.of(ErrorCode.VERIFY_CODE_EXCEPTION);
+        return new ResponseEntity<>(response, HttpStatus.BAD_REQUEST);
+    }
+
     @ExceptionHandler(MailException.class)
     public ResponseEntity<ErrorResponse> handleMailException(final MailException e) {
         log.error("handleMailException", e);
