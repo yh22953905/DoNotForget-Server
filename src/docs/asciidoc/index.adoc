@@ -94,6 +94,13 @@ operation::sign-in[snippets='http-request,http-response']
 
 operation::refresh-token[snippets='http-request,http-response']
 
+[[resources-sign-send-email]]
+=== 이메일 전송
+
+`POST` 요청을 사용해서 인증 번호를 포함한 이메일을 보낼 수 있다.
+
+operation::send-email[snippets='http-request,http-response']
+
 [[resources-sign-verify-email]]
 === 이메일 검증
 

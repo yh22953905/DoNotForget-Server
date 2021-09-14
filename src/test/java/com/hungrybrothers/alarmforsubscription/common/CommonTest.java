@@ -34,7 +34,7 @@ import java.util.Set;
 @Transactional
 @PropertySource("classpath:application.yml")
 public class CommonTest {
-    protected static final String TEST_USER_ID = "yh22953905@gmail.com";
+    protected static final String TEST_USER_ID = "user_id@email.com";
     protected static final String TEST_USERNAME = "username";
     protected static final String TEST_PASSWORD = "password";
 

@@ -30,6 +30,15 @@ public class SignController {
         return ResponseEntity.ok(signService.refreshToken(request));
     }
 
+    @PostMapping("/email")
+    public ResponseEntity<Object> sendEmail(@AuthenticationPrincipal AccountAdapter accountAdapter) {
+        Account account = accountAdapter.getAccount();
+
+        signService.sendEmail(account);
+
+        return ResponseEntity.ok().build();
+    }
+
     @PatchMapping("/email")
     public ResponseEntity<Object> verifyEmail(@RequestBody VerifyEmailRequest request, @AuthenticationPrincipal AccountAdapter accountAdapter) {
         Account account = accountAdapter.getAccount();
