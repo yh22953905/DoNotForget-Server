@@ -6,13 +6,12 @@ import com.fasterxml.jackson.annotation.JsonFormat;
 
 @JsonFormat(shape = JsonFormat.Shape.OBJECT)
 public enum ErrorCode {
-    // Common
-    INVALID_INPUT_VALUE(400, "C001", " Invalid Input Value"),
-    METHOD_NOT_ALLOWED(405, "C002", " Invalid Input Value"),
-    ENTITY_NOT_FOUND(400, "C003", " Entity Not Found"),
-    INTERNAL_SERVER_ERROR(500, "C004", "Server Error"),
-    INVALID_TYPE_VALUE(400, "C005", " Invalid Type Value"),
-    HANDLE_ACCESS_DENIED(403, "C006", "Access is Denied"), // TODO status -> HttpStatus.XXX.value() / message : en -> ko
+    INVALID_INPUT_VALUE(HttpStatus.BAD_REQUEST.value(), "C001", "잘못된 요청입니다. 관리자에게 문의하세요."),
+    METHOD_NOT_ALLOWED(HttpStatus.METHOD_NOT_ALLOWED.value(), "C002", "비정상 요청입니다. 관리자에게 문의하세요."),
+    ENTITY_NOT_FOUND(HttpStatus.BAD_REQUEST.value(), "C003", "요청하신 사항을 찾을 수 없습니다."),
+    INTERNAL_SERVER_ERROR(HttpStatus.INTERNAL_SERVER_ERROR.value(), "C004", "서버 오류입니다. 관리자에게 문의하세요."),
+    INVALID_TYPE_VALUE(HttpStatus.BAD_REQUEST.value(), "C005", "잘못된 요청입니다. 관리자에게 문의하세요."),
+    HANDLE_ACCESS_DENIED(HttpStatus.FORBIDDEN.value(), "C006", "권한이 없습니다. 관리자에게 문의하세요."),
     INVALID_TOKEN(HttpStatus.UNAUTHORIZED.value(), "C007", "인증 토큰이 만료되었습니다. 다시 로그인 해주세요."),
     MAIL_EXCEPTION(HttpStatus.BAD_REQUEST.value(), "C008", "이메일 주소가 유효하지 않습니다. 이메일 주소를 확인해주세요."),
     VERIFY_CODE_EXCEPTION(HttpStatus.BAD_REQUEST.value(), "C009", "인증 코드가 유효하지 않습니다. 인증 코드를 확인해주세요.")
