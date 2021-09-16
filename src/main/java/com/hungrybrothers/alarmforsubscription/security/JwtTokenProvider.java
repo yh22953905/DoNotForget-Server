@@ -7,7 +7,6 @@ import java.util.stream.Collectors;
 
 import javax.servlet.http.HttpServletRequest;
 
-import org.springframework.beans.factory.annotation.Value;
 import org.springframework.security.authentication.UsernamePasswordAuthenticationToken;
 import org.springframework.security.core.Authentication;
 import org.springframework.stereotype.Component;
@@ -30,9 +29,6 @@ import lombok.extern.slf4j.Slf4j;
 public class JwtTokenProvider {
     private final AccountRepository accountRepository;
 
-    @Value("${jwt.secret}")
-    private String secretKey; // TODO to JwtProperties.java
-
     public String createJwtToken(Account account) {
         Date now = new Date();
 
@@ -42,10 +38,10 @@ public class JwtTokenProvider {
 
         return JWT.create()
             .withClaim(JwtProperties.KEY_USER_ID, account.getUserId())
-            .withClaim(JwtProperties.KEY_ROLES, roles) // TODO role -> roles
+            .withClaim(JwtProperties.KEY_ROLES, roles)
             .withIssuedAt(now)
             .withExpiresAt(new Date(now.getTime() + JwtProperties.JWT_TOKEN_EXPIRATION_TIME))
-            .sign(Algorithm.HMAC256(secretKey)); // TODO HMAC256 -> HMAC512
+            .sign(Algorithm.HMAC512(JwtProperties.secretKey));
     }
 
     public String createRefreshToken() {
@@ -54,7 +50,7 @@ public class JwtTokenProvider {
         return JWT.create()
             .withIssuedAt(now)
             .withExpiresAt(new Date(now.getTime() + JwtProperties.REFRESH_TOKEN_EXPIRATION_TIME))
-            .sign(Algorithm.HMAC256(secretKey));
+            .sign(Algorithm.HMAC256(JwtProperties.secretKey));
     }
 
     public String resolveToken(HttpServletRequest request) {
