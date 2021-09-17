@@ -14,6 +14,13 @@ import com.auth0.jwt.exceptions.JWTVerificationException;
 @Slf4j
 @ControllerAdvice
 public class CommonExceptionHandler {
+    @ExceptionHandler(AccountAlreadyExistsException.class)
+    public ResponseEntity<ErrorResponse> handleAccountAlreadyExistsException(final AccountAlreadyExistsException e) {
+        log.error("handleAccountAlreadyExistsException", e);
+        final ErrorResponse response = ErrorResponse.of(ErrorCode.ACCOUNT_ALREADY_EXISTS);
+        return new ResponseEntity<>(response, HttpStatus.BAD_REQUEST);
+    }
+
     @ExceptionHandler(VerifyCodeException.class)
     public ResponseEntity<ErrorResponse> handleVerifyCodeException(final VerifyCodeException e) {
         log.error("handleVerifyCodeException", e);
