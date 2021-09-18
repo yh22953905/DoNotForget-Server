@@ -13,7 +13,7 @@ import com.auth0.jwt.exceptions.JWTVerificationException;
 import com.hungrybrothers.alarmforsubscription.account.Account;
 import com.hungrybrothers.alarmforsubscription.account.AccountRepository;
 import com.hungrybrothers.alarmforsubscription.account.AccountRole;
-import com.hungrybrothers.alarmforsubscription.exception.AccountAlreadyExistsException;
+import com.hungrybrothers.alarmforsubscription.exception.CustomEntityExistsException;
 import com.hungrybrothers.alarmforsubscription.exception.ErrorCode;
 import com.hungrybrothers.alarmforsubscription.exception.VerifyCodeException;
 import com.hungrybrothers.alarmforsubscription.security.JwtTokenProvider;
@@ -33,7 +33,7 @@ public class SignService {
 
     public Account signUp(SignUpRequest signUpRequest) {
         accountRepository.findByUserId(signUpRequest.getUserId()).ifPresent(user -> {
-            throw new AccountAlreadyExistsException(ErrorCode.VERIFY_CODE_EXCEPTION);
+            throw new CustomEntityExistsException(ErrorCode.ACCOUNT_EXISTS);
         });
 
         Set<AccountRole> roles = new HashSet<>();

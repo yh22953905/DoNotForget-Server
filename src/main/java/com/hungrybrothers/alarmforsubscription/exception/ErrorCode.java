@@ -15,7 +15,7 @@ public enum ErrorCode {
     INVALID_TOKEN(HttpStatus.UNAUTHORIZED.value(), "C007", "인증 토큰이 만료되었습니다. 다시 로그인 해주세요."),
     MAIL_EXCEPTION(HttpStatus.BAD_REQUEST.value(), "C008", "이메일 주소가 유효하지 않습니다. 이메일 주소를 확인해주세요."),
     VERIFY_CODE_EXCEPTION(HttpStatus.BAD_REQUEST.value(), "C009", "인증 코드가 유효하지 않습니다. 인증 코드를 확인해주세요."),
-    ACCOUNT_ALREADY_EXISTS(HttpStatus.BAD_REQUEST.value(), "C010", "이미 존재하는 아이디입니다. 이메일을 확인해주세요."),
+    ACCOUNT_EXISTS(HttpStatus.BAD_REQUEST.value(), "C010", "이미 존재하는 아이디입니다. 이메일을 확인해주세요."),
     ;
 
     private final int status;

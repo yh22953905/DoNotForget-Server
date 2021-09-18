@@ -14,39 +14,39 @@ import com.auth0.jwt.exceptions.JWTVerificationException;
 @Slf4j
 @ControllerAdvice
 public class CommonExceptionHandler {
-    @ExceptionHandler(AccountAlreadyExistsException.class)
-    public ResponseEntity<ErrorResponse> handleAccountAlreadyExistsException(final AccountAlreadyExistsException e) {
-        log.error("handleAccountAlreadyExistsException", e);
-        final ErrorResponse response = ErrorResponse.of(ErrorCode.ACCOUNT_ALREADY_EXISTS);
-        return new ResponseEntity<>(response, HttpStatus.BAD_REQUEST);
+    @ExceptionHandler(CustomEntityExistsException.class)
+    public ResponseEntity<ErrorResponse> handleCustomEntityExistsException(final CustomEntityExistsException e) {
+        log.error("handleCustomEntityExistsException", e);
+        final ErrorResponse response = ErrorResponse.of(e.getErrorCode());
+        return new ResponseEntity<>(response, HttpStatus.valueOf(e.getErrorCode().getStatus()));
     }
 
     @ExceptionHandler(VerifyCodeException.class)
     public ResponseEntity<ErrorResponse> handleVerifyCodeException(final VerifyCodeException e) {
         log.error("handleVerifyCodeException", e);
-        final ErrorResponse response = ErrorResponse.of(ErrorCode.VERIFY_CODE_EXCEPTION);
-        return new ResponseEntity<>(response, HttpStatus.BAD_REQUEST);
+        final ErrorResponse response = ErrorResponse.of(e.getErrorCode());
+        return new ResponseEntity<>(response, HttpStatus.valueOf(e.getErrorCode().getStatus()));
     }
 
     @ExceptionHandler(MailException.class)
     public ResponseEntity<ErrorResponse> handleMailException(final MailException e) {
         log.error("handleMailException", e);
         final ErrorResponse response = ErrorResponse.of(ErrorCode.INVALID_INPUT_VALUE);
-        return new ResponseEntity<>(response, HttpStatus.UNAUTHORIZED);
+        return new ResponseEntity<>(response, HttpStatus.valueOf(ErrorCode.INVALID_INPUT_VALUE.getStatus()));
     }
 
     @ExceptionHandler(JWTVerificationException.class)
     public ResponseEntity<ErrorResponse> handleJWTVerificationException(final JWTVerificationException e) {
         log.error("handleJWTVerificationException", e);
         final ErrorResponse response = ErrorResponse.of(ErrorCode.INVALID_INPUT_VALUE);
-        return new ResponseEntity<>(response, HttpStatus.UNAUTHORIZED);
+        return new ResponseEntity<>(response, HttpStatus.valueOf(ErrorCode.INVALID_INPUT_VALUE.getStatus()));
     }
 
     @ExceptionHandler(AccessDeniedException.class)
     public ResponseEntity<ErrorResponse> handleAccessDeniedException(final AccessDeniedException e) {
         log.error("handleAccessDeniedException", e);
         final ErrorResponse response = ErrorResponse.of(ErrorCode.HANDLE_ACCESS_DENIED);
-        return new ResponseEntity<>(response, HttpStatus.FORBIDDEN);
+        return new ResponseEntity<>(response, HttpStatus.valueOf(ErrorCode.HANDLE_ACCESS_DENIED.getStatus()));
     }
 
     @ExceptionHandler(BusinessException.class)
@@ -61,6 +61,6 @@ public class CommonExceptionHandler {
     protected ResponseEntity<ErrorResponse> handleException(Exception e) {
         log.error("handleException", e);
         final ErrorResponse response = ErrorResponse.of(ErrorCode.INTERNAL_SERVER_ERROR);
-        return new ResponseEntity<>(response, HttpStatus.INTERNAL_SERVER_ERROR);
+        return new ResponseEntity<>(response, HttpStatus.valueOf(ErrorCode.INTERNAL_SERVER_ERROR.getStatus()));
     }
 }
