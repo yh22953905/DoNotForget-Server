@@ -129,6 +129,13 @@ HUNGRY-BROTHERS;
 
 operation::sign-up[snippets='http-request,http-response']
 
+[[resources-sign-up-invalid]]
+=== 회원 가입 - 아이디, 닉네임, 비밀번호가 유효하지 않은 경우
+
+회원 가입은 이메일, 닉네임, 비밀번호 형식에 맞는 값으로 해야 한다.
+
+operation::sign-up-invalid[snippets='http-request,http-response']
+
 [[resources-sign-in]]
 === 로그인
 

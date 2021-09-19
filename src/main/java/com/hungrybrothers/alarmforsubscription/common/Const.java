@@ -15,4 +15,10 @@ public class Const {
     public static final String MAIL_SUBJECT = "[DO-NOT-FORGET] 이메일 인증 코드입니다.";
     public static final String MAIL_TEXT = "이메일 인증 코드는 '%s' 입니다.";
     public static final int MAIL_CODE_LENGTH = 6;
+
+    public static final String VALID_MESSAGE_EMAIL = "이메일 형식에 맞게 작성해주세요.";
+    public static final String VALID_MESSAGE_USERNAME = "닉네임은 네 글자 이상의 영어 대소문자, 숫자, 한글로 작성해주세요.";
+    public static final String VALID_MESSAGE_PASSWORD = "비밀번호는 하나 이상의 영어, 숫자, 특수 문자를 포함하여 여덟 글자 이상으로 작성해주세요.";
+
+    public static final String LINE_FEED = "\r\n";
 }

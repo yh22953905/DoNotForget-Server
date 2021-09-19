@@ -1,6 +1,7 @@
 package com.hungrybrothers.alarmforsubscription.sign;
 
 import static org.assertj.core.api.Assertions.*;
+import static org.hamcrest.Matchers.*;
 import static org.junit.jupiter.api.Assertions.*;
 import static org.springframework.restdocs.mockmvc.MockMvcRestDocumentation.*;
 import static org.springframework.test.web.servlet.request.MockMvcRequestBuilders.*;
@@ -29,8 +30,12 @@ import com.hungrybrothers.alarmforsubscription.security.JwtProperties;
 
 public class SignControllerTest extends CommonTest {
     private static final String TEST_USER_ID2 = "user_id2@email.com";
-    private static final String TEST_USERNAME2 = "username";
-    private static final String TEST_PASSWORD2 = "password";
+    private static final String TEST_USERNAME2 = "username2";
+    private static final String TEST_PASSWORD2 = "password2!";
+
+    private static final String INVALID_USER_ID = "invalid-user-id!email.com";
+    private static final String INVALID_USERNAME = "invalid-username";
+    private static final String INVALID_PASSWORD = "invalid-password";
 
     @Test
     @DisplayName("회원 가입 - Created")
@@ -42,18 +47,32 @@ public class SignControllerTest extends CommonTest {
             .accountRole(AccountRole.CLIENT.name())
             .build();
 
-        mockMvc.perform(post(Const.API_SIGN + "/up")
-                .contentType(MediaType.APPLICATION_JSON)
-                .accept(MediaTypes.HAL_JSON)
-                .content(objectMapper.writeValueAsString(signUpRequest)))
+        getSignUpActions(signUpRequest)
             .andExpect(status().isOk())
-            .andDo(print())
             .andDo(document("sign-up"))
             .andExpect(jsonPath("id").exists())
             .andExpect(jsonPath("userId").exists())
             .andExpect(jsonPath("username").exists())
             .andExpect(jsonPath("password").doesNotExist())
             .andExpect(jsonPath("roles").doesNotExist());
+    }
+
+    @Test
+    @DisplayName("회원 가입 - 아이디, 닉네임, 비밀번호가 유효하지 않은 경우")
+    void signUpInvalidInput() throws Exception {
+        SignUpRequest signUpRequest = SignUpRequest.builder()
+            .userId(INVALID_USER_ID)
+            .username(INVALID_USERNAME)
+            .password(INVALID_PASSWORD)
+            .accountRole(AccountRole.CLIENT.name())
+            .build();
+
+        getSignUpActions(signUpRequest)
+            .andExpect(status().isBadRequest())
+            .andDo(document("sign-up-invalid"))
+            .andExpect(jsonPath("message", containsString(Const.VALID_MESSAGE_EMAIL)))
+            .andExpect(jsonPath("message", containsString(Const.VALID_MESSAGE_USERNAME)))
+            .andExpect(jsonPath("message", containsString(Const.VALID_MESSAGE_PASSWORD)));
     }
 
     @Test
@@ -203,6 +222,14 @@ public class SignControllerTest extends CommonTest {
             .andDo(print())
             .andExpect(result -> assertTrue(result.getResolvedException() instanceof VerifyCodeException))
             .andExpect(result -> assertEquals(Objects.requireNonNull(result.getResolvedException()).getMessage(), ErrorCode.VERIFY_CODE_EXCEPTION.getMessage()));
+    }
+
+    private ResultActions getSignUpActions(SignUpRequest signUpRequest) throws Exception {
+        return mockMvc.perform(post(Const.API_SIGN + "/up")
+                .contentType(MediaType.APPLICATION_JSON)
+                .accept(MediaTypes.HAL_JSON)
+                .content(objectMapper.writeValueAsString(signUpRequest)))
+            .andDo(print());
     }
 
     @NotNull
