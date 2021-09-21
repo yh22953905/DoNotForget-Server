@@ -1,7 +1,9 @@
 package com.hungrybrothers.alarmforsubscription.utils;
 
+import java.util.Arrays;
 import java.util.Random;
 
+import org.springframework.core.env.Environment;
 import org.springframework.mail.SimpleMailMessage;
 import org.springframework.mail.javamail.JavaMailSender;
 import org.springframework.stereotype.Service;
@@ -14,15 +16,18 @@ import lombok.RequiredArgsConstructor;
 @RequiredArgsConstructor
 public class MailUtils {
 	private final JavaMailSender javaMailSender;
+	private final Environment environment;
 
 	public void sendMail(String email, String code) {
-		SimpleMailMessage message = new SimpleMailMessage();
+		if (!Arrays.asList(environment.getActiveProfiles()).contains("test")) {
+			SimpleMailMessage message = new SimpleMailMessage();
 
-		message.setTo(email);
-		message.setSubject(Const.MAIL_SUBJECT);
-		message.setText(String.format(Const.MAIL_TEXT, code));
+			message.setTo(email);
+			message.setSubject(Const.MAIL_SUBJECT);
+			message.setText(String.format(Const.MAIL_TEXT, code));
 
-		javaMailSender.send(message);
+			javaMailSender.send(message);
+		}
 	}
 
 	public String generateCode() {

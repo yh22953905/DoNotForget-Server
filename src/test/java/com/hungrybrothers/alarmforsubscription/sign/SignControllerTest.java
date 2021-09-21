@@ -149,7 +149,6 @@ public class SignControllerTest extends CommonTest {
             .andExpect(result -> assertEquals(Objects.requireNonNull(result.getResolvedException()).getMessage(), ErrorCode.INVALID_TOKEN.getMessage()));
     }
 
-    @Disabled
     @Test
     @DisplayName("메일 발송 - OK")
     void sendEmailOk() throws Exception {
