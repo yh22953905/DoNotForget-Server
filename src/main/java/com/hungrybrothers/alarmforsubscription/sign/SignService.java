@@ -31,7 +31,7 @@ public class SignService {
     private final JwtTokenProvider jwtTokenProvider;
     private final MailUtils mailUtils;
 
-    public Account signUp(SignUpRequest signUpRequest) {
+    public SignUpResponse signUp(SignUpRequest signUpRequest) {
         accountRepository.findByUserId(signUpRequest.getUserId()).ifPresent(user -> {
             throw new CustomEntityExistsException(ErrorCode.ACCOUNT_EXISTS);
         });
@@ -39,12 +39,17 @@ public class SignService {
         Set<AccountRole> roles = new HashSet<>();
         roles.add(AccountRole.valueOf(signUpRequest.getAccountRole()));
 
-        return accountRepository.save(Account.builder()
+        Account account = accountRepository.save(Account.builder()
             .userId(signUpRequest.getUserId())
             .username(signUpRequest.getUsername())
             .password(passwordEncoder.encode(signUpRequest.getPassword()))
             .roles(roles)
             .build());
+
+        return SignUpResponse.builder()
+            .userId(account.getUserId())
+            .username(account.getUsername())
+            .build();
     }
 
     @SneakyThrows

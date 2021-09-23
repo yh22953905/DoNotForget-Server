@@ -31,10 +31,11 @@ public class SubscriptionController {
     private final ModelMapper modelMapper;
 
     @GetMapping(path = "/{id}")
-    public ResponseEntity<EntityModel<Subscription>> readSubscription(@PathVariable Long id) {
+    public ResponseEntity<EntityModel<SubscriptionResponse>> readSubscription(@PathVariable Long id) {
         Subscription subscription = subscriptionRepository.findById(id).orElseThrow(EntityNotFoundException::new);
 
-        EntityModel<Subscription> entityModel = CommonResource.modelOf(subscription, subscription.getId(), SubscriptionController.class);
+        EntityModel<SubscriptionResponse> entityModel = CommonResource
+            .modelOf(modelMapper.map(subscription, SubscriptionResponse.class), subscription.getId(), SubscriptionController.class);
 
         entityModel.add(Link.of("resources-subscription-read").withRel(LinkRelation.of("profile")));
 
@@ -42,14 +43,15 @@ public class SubscriptionController {
     }
 
     @GetMapping(path = "/account")
-    public ResponseEntity<PagedModel<EntityModel<Subscription>>> readSubscriptionsByAccount(
+    public ResponseEntity<PagedModel<EntityModel<SubscriptionResponse>>> readSubscriptionsByAccount(
             @PageableDefault(size = 100, sort = "nextReminderDateTime") Pageable pageable
             , PagedResourcesAssembler<Subscription> assembler
             , @CurrentAccount Account account
     ) {
         Page<Subscription> page = subscriptionRepository.findAllByCreateUser(account, pageable);
 
-        PagedModel<EntityModel<Subscription>> entityModels = assembler.toModel(page, subscription -> CommonResource.modelOf(subscription, subscription.getId(), SubscriptionController.class));
+        PagedModel<EntityModel<SubscriptionResponse>> entityModels = assembler
+            .toModel(page, subscription -> CommonResource.modelOf(modelMapper.map(subscription, SubscriptionResponse.class), subscription.getId(), SubscriptionController.class));
 
         entityModels.add(Link.of("resources-subscriptions-read").withRel(LinkRelation.of("profile")));
 
@@ -57,12 +59,13 @@ public class SubscriptionController {
     }
 
     @PostMapping
-    public ResponseEntity<EntityModel<Subscription>> createSubscription(@RequestBody SubscriptionRequest subscriptionRequest) {
+    public ResponseEntity<EntityModel<SubscriptionResponse>> createSubscription(@RequestBody SubscriptionRequest subscriptionRequest) {
         Subscription subscription = modelMapper.map(subscriptionRequest, Subscription.class);
 
         Subscription savedSubscription = subscriptionRepository.save(subscription);
 
-        EntityModel<Subscription> entityModel = CommonResource.modelOf(savedSubscription, savedSubscription.getId(), SubscriptionController.class);
+        EntityModel<SubscriptionResponse> entityModel = CommonResource
+            .modelOf(modelMapper.map(savedSubscription, SubscriptionResponse.class), savedSubscription.getId(), SubscriptionController.class);
 
         return ResponseEntity.ok(entityModel);
     }

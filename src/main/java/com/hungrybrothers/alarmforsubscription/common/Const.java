@@ -21,4 +21,6 @@ public class Const {
     public static final String VALID_MESSAGE_PASSWORD = "비밀번호는 하나 이상의 영어, 숫자, 특수 문자를 포함하여 여덟 글자 이상으로 작성해주세요.";
 
     public static final String LINE_FEED = "\r\n";
+    public static final String LOCAL_DATE_TIME_FORMAT = "yyyy-MM-dd HH:mm:ss";
+	public static final String HYPHEN = "-";
 }

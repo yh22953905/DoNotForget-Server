@@ -26,10 +26,10 @@ public class SubscriptionControllerTest extends CommonTest {
     @BeforeEach
     public void generateTestData() {
         Subscription subscription = Subscription.builder()
-                .url("http://www.google.com")
-                .cycle(1000L * 60 * 60 * 24 * 30)
-                .nextReminderDateTime(LocalDateTime.now())
-                .build();
+            .url("http://www.google.com")
+            .cycle(1000L * 60 * 60 * 24 * 30)
+            .nextReminderDateTime(LocalDateTime.now())
+            .build();
 
         subscription.setCreateUser(savedAccount);
         subscription.setUpdateUser(savedAccount);
@@ -45,13 +45,23 @@ public class SubscriptionControllerTest extends CommonTest {
     public void readSubscription() throws Exception {
         mockMvc.perform(
                 get(Const.API_SUBSCRIPTION + "/{id}", testSubscriptionId)
-                        .header(JwtProperties.REQUEST_HEADER_AUTHORIZATION, jwtToken)
-                        .contentType(MediaType.APPLICATION_JSON)
-                        .accept(MediaTypes.HAL_JSON)
-        )
-                .andExpect(status().isOk())
-                .andDo(print())
-                .andDo(document("read-subscription"));
+                    .header(JwtProperties.REQUEST_HEADER_AUTHORIZATION, jwtToken)
+                    .contentType(MediaType.APPLICATION_JSON)
+                    .accept(MediaTypes.HAL_JSON)
+            )
+            .andExpect(status().isOk())
+            .andDo(print())
+            .andDo(document("read-subscription"))
+            .andExpect(jsonPath("id").exists())
+            .andExpect(jsonPath("url").exists())
+            .andExpect(jsonPath("cycle").exists())
+            .andExpect(jsonPath("nextReminderDateTime").exists())
+            .andExpect(jsonPath("_links").exists())
+            .andExpect(jsonPath("_links.profile").exists())
+            .andExpect(jsonPath("createDateTime").doesNotExist())
+            .andExpect(jsonPath("createUser").doesNotExist())
+            .andExpect(jsonPath("updateDateTime").doesNotExist())
+            .andExpect(jsonPath("updateUser").doesNotExist());
     }
 
     @Test
@@ -59,13 +69,20 @@ public class SubscriptionControllerTest extends CommonTest {
     public void readSubscriptionsByUser() throws Exception {
         mockMvc.perform(
                 get(Const.API_SUBSCRIPTION + "/account")
-                        .header(JwtProperties.REQUEST_HEADER_AUTHORIZATION, jwtToken)
-                        .contentType(MediaType.APPLICATION_JSON)
-                        .accept(MediaTypes.HAL_JSON)
-        )
-                .andExpect(status().isOk())
-                .andDo(print())
-                .andDo(document("read-subscriptions"));
+                    .header(JwtProperties.REQUEST_HEADER_AUTHORIZATION, jwtToken)
+                    .contentType(MediaType.APPLICATION_JSON)
+                    .accept(MediaTypes.HAL_JSON)
+            )
+            .andExpect(status().isOk())
+            .andDo(print())
+            .andDo(document("read-subscriptions"))
+            .andExpect(jsonPath("_embedded.subscriptionResponseList[0].id").exists())
+            .andExpect(jsonPath("_embedded.subscriptionResponseList[0].url").exists())
+            .andExpect(jsonPath("_embedded.subscriptionResponseList[0].cycle").exists())
+            .andExpect(jsonPath("_embedded.subscriptionResponseList[0].nextReminderDateTime").exists())
+            .andExpect(jsonPath("_embedded.subscriptionResponseList[0]._links").exists())
+            .andExpect(jsonPath("_links").exists())
+            .andExpect(jsonPath("_links.profile").exists());
     }
 
     @Test
@@ -79,14 +96,23 @@ public class SubscriptionControllerTest extends CommonTest {
 
         mockMvc.perform(
                 post(Const.API_SUBSCRIPTION)
-                        .header(JwtProperties.REQUEST_HEADER_AUTHORIZATION, jwtToken)
-                        .contentType(MediaType.APPLICATION_JSON)
-                        .accept(MediaTypes.HAL_JSON)
-                        .content(objectMapper.writeValueAsString(subscriptionRequest))
-        )
-                .andExpect(status().isOk())
-                .andDo(print())
-                .andDo(document("create-subscription"));
+                    .header(JwtProperties.REQUEST_HEADER_AUTHORIZATION, jwtToken)
+                    .contentType(MediaType.APPLICATION_JSON)
+                    .accept(MediaTypes.HAL_JSON)
+                    .content(objectMapper.writeValueAsString(subscriptionRequest))
+            )
+            .andExpect(status().isOk())
+            .andDo(print())
+            .andDo(document("create-subscription"))
+            .andExpect(jsonPath("id").exists())
+            .andExpect(jsonPath("url").exists())
+            .andExpect(jsonPath("cycle").exists())
+            .andExpect(jsonPath("nextReminderDateTime").exists())
+            .andExpect(jsonPath("_links").exists())
+            .andExpect(jsonPath("createDateTime").doesNotExist())
+            .andExpect(jsonPath("createUser").doesNotExist())
+            .andExpect(jsonPath("updateDateTime").doesNotExist())
+            .andExpect(jsonPath("updateUser").doesNotExist());
     }
 
     @Test

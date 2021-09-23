@@ -11,7 +11,6 @@ import static org.springframework.test.web.servlet.result.MockMvcResultMatchers.
 import java.util.Objects;
 
 import org.jetbrains.annotations.NotNull;
-import org.junit.jupiter.api.Disabled;
 import org.junit.jupiter.api.DisplayName;
 import org.junit.jupiter.api.Test;
 import org.springframework.hateoas.MediaTypes;
@@ -50,11 +49,14 @@ public class SignControllerTest extends CommonTest {
         getSignUpActions(signUpRequest)
             .andExpect(status().isOk())
             .andDo(document("sign-up"))
-            .andExpect(jsonPath("id").exists())
+            .andExpect(jsonPath("id").doesNotExist())
             .andExpect(jsonPath("userId").exists())
             .andExpect(jsonPath("username").exists())
             .andExpect(jsonPath("password").doesNotExist())
-            .andExpect(jsonPath("roles").doesNotExist());
+            .andExpect(jsonPath("roles").doesNotExist())
+            .andExpect(jsonPath("refreshToken").doesNotExist())
+            .andExpect(jsonPath("verifyCode").doesNotExist())
+            .andExpect(jsonPath("verified").doesNotExist());
     }
 
     @Test

@@ -23,10 +23,8 @@ public class SignController {
     private final SignService signService;
 
     @PostMapping("/up")
-    public ResponseEntity<Account> signUp(@Valid @RequestBody SignUpRequest signUpRequest) {
-        Account signUpAccount = signService.signUp(signUpRequest);
-
-        return ResponseEntity.ok(signUpAccount);
+    public ResponseEntity<SignUpResponse> signUp(@Valid @RequestBody SignUpRequest signUpRequest) {
+        return ResponseEntity.ok(signService.signUp(signUpRequest));
     }
 
     @PostMapping("/refresh-token")
