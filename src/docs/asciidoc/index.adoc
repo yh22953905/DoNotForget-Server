@@ -119,6 +119,16 @@ HUNGRY-BROTHERS;
 [[resources]]
 = 리소스
 
+[[resources-hateoas]]
+== HATEOAS
+
+[[resources-read-indices]]
+=== HATEOAS 인덱스 조회 성공
+
+`GET` 요청을 사용해서 HATEOAS 인덱스들을 조회할 수 있다.
+
+operation::read-indices[snippets='http-request,http-response']
+
 [[resources-sign]]
 == 회원
 
