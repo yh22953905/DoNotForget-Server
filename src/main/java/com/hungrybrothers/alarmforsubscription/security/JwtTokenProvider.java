@@ -28,6 +28,7 @@ import lombok.extern.slf4j.Slf4j;
 @RequiredArgsConstructor
 public class JwtTokenProvider {
     private final AccountRepository accountRepository;
+    private final Algorithm algorithm = Algorithm.HMAC512(JwtProperties.secretKey);
 
     public String createJwtToken(Account account) {
         Date now = new Date();
@@ -41,7 +42,7 @@ public class JwtTokenProvider {
             .withClaim(JwtProperties.KEY_ROLES, roles)
             .withIssuedAt(now)
             .withExpiresAt(new Date(now.getTime() + JwtProperties.JWT_TOKEN_EXPIRATION_TIME))
-            .sign(Algorithm.HMAC512(JwtProperties.secretKey));
+            .sign(algorithm);
     }
 
     public String createRefreshToken() {
@@ -50,7 +51,7 @@ public class JwtTokenProvider {
         return JWT.create()
             .withIssuedAt(now)
             .withExpiresAt(new Date(now.getTime() + JwtProperties.REFRESH_TOKEN_EXPIRATION_TIME))
-            .sign(Algorithm.HMAC256(JwtProperties.secretKey));
+            .sign(algorithm);
     }
 
     public String resolveToken(HttpServletRequest request) {
