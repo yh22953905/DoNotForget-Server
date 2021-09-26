@@ -11,6 +11,7 @@ import org.springframework.transaction.annotation.Transactional;
 
 import com.auth0.jwt.exceptions.JWTVerificationException;
 import com.hungrybrothers.alarmforsubscription.account.Account;
+import com.hungrybrothers.alarmforsubscription.account.AccountAdapter;
 import com.hungrybrothers.alarmforsubscription.account.AccountRepository;
 import com.hungrybrothers.alarmforsubscription.account.AccountRole;
 import com.hungrybrothers.alarmforsubscription.exception.CustomEntityExistsException;
@@ -69,7 +70,20 @@ public class SignService {
         }
     }
 
-    public void verifyEmail(VerifyEmailRequest request, Account account) {
+    public void sendEmail(AccountAdapter accountAdapter) {
+        Account account = accountAdapter.getAccount();
+
+        String code = mailUtils.generateCode();
+
+        mailUtils.sendMail(account.getUserId(), code);
+
+        account.setVerifyCode(code);
+        accountRepository.save(account);
+    }
+
+    public void verifyEmail(VerifyEmailRequest request, AccountAdapter accountAdapter) {
+        Account account = accountAdapter.getAccount();
+
         if (Objects.equals(request.getVerifyCode(), account.getVerifyCode())) {
             account.setVerified(true);
             accountRepository.save(account);
@@ -77,14 +91,5 @@ public class SignService {
         }
 
         throw new VerifyCodeException(ErrorCode.VERIFY_CODE_EXCEPTION);
-    }
-
-    public void sendEmail(Account account) {
-        String code = mailUtils.generateCode();
-
-        mailUtils.sendMail(account.getUserId(), code);
-
-        account.setVerifyCode(code);
-        accountRepository.save(account);
     }
 }

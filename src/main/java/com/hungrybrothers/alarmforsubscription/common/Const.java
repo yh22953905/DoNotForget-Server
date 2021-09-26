@@ -24,4 +24,7 @@ public class Const {
     public static final String LINE_FEED = "\r\n";
     public static final String LOCAL_DATE_TIME_FORMAT = "yyyy-MM-dd HH:mm:ss";
 	public static final String HYPHEN = "-";
+
+    public static final String HATEOAS_SIGN = "sign";
+    public static final String HATEOAS_SUBSCRIPTIONS = "subscriptions";
 }

@@ -10,7 +10,6 @@ import org.springframework.web.bind.annotation.PostMapping;
 import org.springframework.web.bind.annotation.RequestBody;
 import org.springframework.web.bind.annotation.RequestMapping;
 
-import com.hungrybrothers.alarmforsubscription.account.Account;
 import com.hungrybrothers.alarmforsubscription.account.AccountAdapter;
 import com.hungrybrothers.alarmforsubscription.common.Const;
 
@@ -34,19 +33,13 @@ public class SignController {
 
     @PostMapping("/email")
     public ResponseEntity<Object> sendEmail(@AuthenticationPrincipal AccountAdapter accountAdapter) {
-        Account account = accountAdapter.getAccount();
-
-        signService.sendEmail(account);
-
+        signService.sendEmail(accountAdapter);
         return ResponseEntity.ok().build();
     }
 
     @PatchMapping("/email")
     public ResponseEntity<Object> verifyEmail(@RequestBody VerifyEmailRequest request, @AuthenticationPrincipal AccountAdapter accountAdapter) {
-        Account account = accountAdapter.getAccount();
-
-        signService.verifyEmail(request, account);
-
+        signService.verifyEmail(request, accountAdapter);
         return ResponseEntity.ok().build();
     }
 }
