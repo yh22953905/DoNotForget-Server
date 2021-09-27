@@ -41,7 +41,7 @@ public class SecurityConfig extends WebSecurityConfigurerAdapter {
             .authorizeRequests()
             .mvcMatchers(Const.API_SIGN + "/up"
                 , Const.API_SIGN + "/refresh-token"
-                , Const.API_HATEOAS + "/**").permitAll()
+                , Const.API_HATEOAS).permitAll()
             .mvcMatchers(Const.ERROR_URL).permitAll()
             .requestMatchers(EndpointRequest.toAnyEndpoint()).permitAll()
             .anyRequest().authenticated();

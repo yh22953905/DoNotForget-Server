@@ -2,8 +2,6 @@ package com.hungrybrothers.alarmforsubscription.hateoas;
 
 import static org.springframework.hateoas.server.mvc.WebMvcLinkBuilder.*;
 
-import org.springframework.hateoas.EntityModel;
-import org.springframework.hateoas.Link;
 import org.springframework.hateoas.RepresentationModel;
 import org.springframework.http.ResponseEntity;
 import org.springframework.stereotype.Controller;
