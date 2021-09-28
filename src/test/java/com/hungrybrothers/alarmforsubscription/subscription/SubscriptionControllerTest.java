@@ -7,6 +7,7 @@ import static org.springframework.test.web.servlet.result.MockMvcResultHandlers.
 import static org.springframework.test.web.servlet.result.MockMvcResultMatchers.*;
 
 import java.time.LocalDateTime;
+import java.time.format.DateTimeFormatter;
 
 import javax.persistence.EntityNotFoundException;
 
@@ -88,18 +89,21 @@ public class SubscriptionControllerTest extends CommonTest {
     @Test
     @DisplayName("하나의 구독 정보 생성 성공")
     public void createSubscription() throws Exception {
+        String now = LocalDateTime.now().format(DateTimeFormatter.ofPattern(Const.LOCAL_DATE_TIME_FORMAT));
+        String formattedNow = String.format("\"%s\"", now);
+
         SubscriptionRequest subscriptionRequest = SubscriptionRequest.builder()
-                .url("http://www.google.com")
-                .cycle(1000L * 60 * 60 * 24 * 30)
-//                .nextReminderDateTime(LocalDateTime.now())
-                .build();
+            .url("http://www.google.com")
+            .cycle(1000L * 60 * 60 * 24 * 30)
+            .nextReminderDateTime(null)
+            .build();
 
         mockMvc.perform(
                 post(Const.API_SUBSCRIPTION)
                     .header(JwtProperties.REQUEST_HEADER_AUTHORIZATION, jwtToken)
                     .contentType(MediaType.APPLICATION_JSON)
                     .accept(MediaTypes.HAL_JSON)
-                    .content(objectMapper.writeValueAsString(subscriptionRequest))
+                    .content(objectMapper.writeValueAsString(subscriptionRequest).replace("null", formattedNow))
             )
             .andExpect(status().isOk())
             .andDo(print())
