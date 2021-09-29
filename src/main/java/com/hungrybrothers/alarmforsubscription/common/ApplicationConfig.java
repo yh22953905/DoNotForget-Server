@@ -37,7 +37,7 @@ public class ApplicationConfig {
     }
 
     @Bean
-    public AuditorAware auditorAware() {
+    public AuditorAware<Account> auditorAware() {
         return () -> {
             Optional<Authentication> optionalAuthentication = Optional.ofNullable(SecurityContextHolder.getContext().getAuthentication());
 
