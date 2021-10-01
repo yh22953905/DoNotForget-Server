@@ -7,6 +7,7 @@ import java.util.stream.Collectors;
 
 import javax.servlet.http.HttpServletRequest;
 
+import org.springframework.beans.factory.annotation.Value;
 import org.springframework.security.authentication.UsernamePasswordAuthenticationToken;
 import org.springframework.security.core.Authentication;
 import org.springframework.stereotype.Component;
@@ -27,8 +28,10 @@ import lombok.extern.slf4j.Slf4j;
 @Component
 @RequiredArgsConstructor
 public class JwtTokenProvider {
+    @Value("${jwt.secret}")
+    private String secretKey;
+
     private final AccountRepository accountRepository;
-    private final Algorithm algorithm = Algorithm.HMAC512(JwtProperties.secretKey);
 
     public String createJwtToken(Account account) {
         Date now = new Date();
@@ -42,7 +45,7 @@ public class JwtTokenProvider {
             .withClaim(JwtProperties.KEY_ROLES, roles)
             .withIssuedAt(now)
             .withExpiresAt(new Date(now.getTime() + JwtProperties.JWT_TOKEN_EXPIRATION_TIME))
-            .sign(algorithm);
+            .sign(Algorithm.HMAC512(secretKey));
     }
 
     public String createRefreshToken() {
@@ -51,7 +54,7 @@ public class JwtTokenProvider {
         return JWT.create()
             .withIssuedAt(now)
             .withExpiresAt(new Date(now.getTime() + JwtProperties.REFRESH_TOKEN_EXPIRATION_TIME))
-            .sign(algorithm);
+            .sign(Algorithm.HMAC512(secretKey));
     }
 
     public String resolveToken(HttpServletRequest request) {

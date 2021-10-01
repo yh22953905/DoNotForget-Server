@@ -1,6 +1,5 @@
 package com.hungrybrothers.alarmforsubscription.security;
 
-import org.springframework.beans.factory.annotation.Value;
 import org.springframework.stereotype.Component;
 
 @Component
@@ -12,11 +11,4 @@ public class JwtProperties {
 
 	public static final String REQUEST_HEADER_AUTHORIZATION = "Authorization";
 	public static final String REQUEST_HEADER_AUTHORIZATION_TYPE = "Bearer ";
-
-	public static String secretKey;
-
-	@Value("${jwt.secret}")
-	public void setSecretKey(String secretKey) {
-		this.secretKey = secretKey;
-	}
 }
