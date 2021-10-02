@@ -63,6 +63,15 @@
         </appender>
     </springProfile>
 
+    <springProfile name="redis-logging">
+        <appender name="REDIS" class="ch.qos.logback.core.ConsoleAppender">
+            <encoder>
+                <pattern>${CONSOLE_LOG_PATTERN}</pattern>
+                <charset>utf8</charset>
+            </encoder>
+        </appender>
+    </springProfile>
+
     <!-- root레벨 설정 -->
     <root level="${LOG_LEVEL}">
         <springProfile name="slack-logging">
@@ -75,6 +84,10 @@
 
         <springProfile name="file-logging">
             <appender-ref ref="FILE"/>
+        </springProfile>
+
+        <springProfile name="redis-logging">
+            <appender-ref ref="REDIS"/>
         </springProfile>
     </root>
 </configuration>
