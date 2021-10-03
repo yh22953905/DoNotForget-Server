@@ -14,7 +14,7 @@ import lombok.RequiredArgsConstructor;
 @Configuration
 @EnableRedisRepositories
 @RequiredArgsConstructor
-public class RedisCacheConfig {
+public class RedisServerConfig {
 	private final RedisProperties redisProperties;
 
 	@Bean

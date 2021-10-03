@@ -1,6 +1,5 @@
 package com.hungrybrothers.alarmforsubscription.security;
 
-import com.hungrybrothers.alarmforsubscription.account.AccountRepository;
 import org.springframework.boot.actuate.autoconfigure.security.servlet.EndpointRequest;
 import org.springframework.boot.autoconfigure.security.servlet.PathRequest;
 import org.springframework.context.annotation.Configuration;
@@ -11,7 +10,9 @@ import org.springframework.security.config.annotation.web.configuration.WebSecur
 import org.springframework.security.config.http.SessionCreationPolicy;
 
 import com.fasterxml.jackson.databind.ObjectMapper;
+import com.hungrybrothers.alarmforsubscription.account.AccountRepository;
 import com.hungrybrothers.alarmforsubscription.common.Const;
+import com.hungrybrothers.alarmforsubscription.sign.RefreshTokenRepository;
 
 import lombok.RequiredArgsConstructor;
 
@@ -22,6 +23,7 @@ public class SecurityConfig extends WebSecurityConfigurerAdapter {
     private final JwtTokenProvider jwtTokenProvider;
     private final ObjectMapper objectMapper;
     private final AccountRepository accountRepository;
+    private final RefreshTokenRepository refreshTokenRepository;
 
     @Override
     public void configure(WebSecurity web) {
@@ -47,7 +49,7 @@ public class SecurityConfig extends WebSecurityConfigurerAdapter {
             .anyRequest().authenticated();
 
         http
-            .addFilter(new JwtAuthenticationFilter(authenticationManager(), jwtTokenProvider, objectMapper, accountRepository))
+            .addFilter(new JwtAuthenticationFilter(authenticationManager(), jwtTokenProvider, objectMapper, accountRepository, refreshTokenRepository))
             .addFilter(new JwtAuthorizationFilter(authenticationManager(), jwtTokenProvider));
     }
 }

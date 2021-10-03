@@ -32,7 +32,7 @@ import org.springframework.data.redis.core.ZSetOperations;
 
 import com.hungrybrothers.alarmforsubscription.common.CommonTest;
 
-// @Disabled
+@Disabled
 public class RedisTest extends CommonTest {
 	@Autowired
 	RedisTemplate redisTemplate;

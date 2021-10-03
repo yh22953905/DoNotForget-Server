@@ -5,6 +5,8 @@ import com.hungrybrothers.alarmforsubscription.account.Account;
 import com.hungrybrothers.alarmforsubscription.account.AccountAdapter;
 import com.hungrybrothers.alarmforsubscription.account.AccountRepository;
 import com.hungrybrothers.alarmforsubscription.common.Const;
+import com.hungrybrothers.alarmforsubscription.sign.RefreshToken;
+import com.hungrybrothers.alarmforsubscription.sign.RefreshTokenRepository;
 import com.hungrybrothers.alarmforsubscription.sign.SignInRequest;
 import com.hungrybrothers.alarmforsubscription.sign.SignInResponse;
 import lombok.SneakyThrows;
@@ -23,12 +25,14 @@ public class JwtAuthenticationFilter extends UsernamePasswordAuthenticationFilte
     private final JwtTokenProvider jwtTokenProvider;
     private final ObjectMapper objectMapper;
     private final AccountRepository accountRepository;
+    private final RefreshTokenRepository refreshTokenRepository;
 
-    public JwtAuthenticationFilter(AuthenticationManager authenticationManager, JwtTokenProvider jwtTokenProvider, ObjectMapper objectMapper, AccountRepository accountRepository) {
+    public JwtAuthenticationFilter(AuthenticationManager authenticationManager, JwtTokenProvider jwtTokenProvider, ObjectMapper objectMapper, AccountRepository accountRepository, RefreshTokenRepository refreshTokenRepository) {
         this.authenticationManager = authenticationManager;
         this.jwtTokenProvider = jwtTokenProvider;
         this.objectMapper = objectMapper;
         this.accountRepository = accountRepository;
+        this.refreshTokenRepository = refreshTokenRepository;
         setFilterProcessesUrl(Const.API_SIGN + "/in");
     }
 
@@ -57,6 +61,11 @@ public class JwtAuthenticationFilter extends UsernamePasswordAuthenticationFilte
         account.setRefreshToken(refreshToken);
 
         accountRepository.save(account);
+
+        RefreshToken savedRefreshToken = refreshTokenRepository.save(RefreshToken.builder()
+            .userId(account.getUserId())
+            .refreshToken(refreshToken)
+            .build());
 
         response.getWriter().write(objectMapper.writeValueAsString(SignInResponse.builder()
             .jwtToken(jwtToken)
