@@ -1,38 +1,40 @@
 package com.hungrybrothers.alarmforsubscription.security;
 
-import com.fasterxml.jackson.databind.ObjectMapper;
-import com.hungrybrothers.alarmforsubscription.account.Account;
-import com.hungrybrothers.alarmforsubscription.account.AccountAdapter;
-import com.hungrybrothers.alarmforsubscription.account.AccountRepository;
-import com.hungrybrothers.alarmforsubscription.common.Const;
-import com.hungrybrothers.alarmforsubscription.sign.RefreshToken;
-import com.hungrybrothers.alarmforsubscription.sign.RefreshTokenRepository;
-import com.hungrybrothers.alarmforsubscription.sign.SignInRequest;
-import com.hungrybrothers.alarmforsubscription.sign.SignInResponse;
-import lombok.SneakyThrows;
+import javax.servlet.FilterChain;
+import javax.servlet.http.HttpServletRequest;
+import javax.servlet.http.HttpServletResponse;
+
 import org.springframework.security.authentication.AuthenticationManager;
 import org.springframework.security.authentication.UsernamePasswordAuthenticationToken;
 import org.springframework.security.core.Authentication;
 import org.springframework.security.core.userdetails.UsernameNotFoundException;
 import org.springframework.security.web.authentication.UsernamePasswordAuthenticationFilter;
 
-import javax.servlet.FilterChain;
-import javax.servlet.http.HttpServletRequest;
-import javax.servlet.http.HttpServletResponse;
+import com.fasterxml.jackson.databind.ObjectMapper;
+import com.hungrybrothers.alarmforsubscription.account.Account;
+import com.hungrybrothers.alarmforsubscription.account.AccountAdapter;
+import com.hungrybrothers.alarmforsubscription.account.AccountRepository;
+import com.hungrybrothers.alarmforsubscription.common.Const;
+import com.hungrybrothers.alarmforsubscription.redis.refreshtoken.RefreshToken;
+import com.hungrybrothers.alarmforsubscription.redis.refreshtoken.RefreshTokenService;
+import com.hungrybrothers.alarmforsubscription.sign.SignInRequest;
+import com.hungrybrothers.alarmforsubscription.sign.SignInResponse;
+
+import lombok.SneakyThrows;
 
 public class JwtAuthenticationFilter extends UsernamePasswordAuthenticationFilter {
     private final AuthenticationManager authenticationManager;
     private final JwtTokenProvider jwtTokenProvider;
     private final ObjectMapper objectMapper;
     private final AccountRepository accountRepository;
-    private final RefreshTokenRepository refreshTokenRepository;
+    private final RefreshTokenService refreshTokenService;
 
-    public JwtAuthenticationFilter(AuthenticationManager authenticationManager, JwtTokenProvider jwtTokenProvider, ObjectMapper objectMapper, AccountRepository accountRepository, RefreshTokenRepository refreshTokenRepository) {
+    public JwtAuthenticationFilter(AuthenticationManager authenticationManager, JwtTokenProvider jwtTokenProvider, ObjectMapper objectMapper, AccountRepository accountRepository, RefreshTokenService refreshTokenService) {
         this.authenticationManager = authenticationManager;
         this.jwtTokenProvider = jwtTokenProvider;
         this.objectMapper = objectMapper;
         this.accountRepository = accountRepository;
-        this.refreshTokenRepository = refreshTokenRepository;
+        this.refreshTokenService = refreshTokenService;
         setFilterProcessesUrl(Const.API_SIGN + "/in");
     }
 
@@ -57,19 +59,14 @@ public class JwtAuthenticationFilter extends UsernamePasswordAuthenticationFilte
 
         Account account = accountRepository.findByUserId(accountAdapter.getUsername())
             .orElseThrow(() -> new UsernameNotFoundException(accountAdapter.getUsername()));
-
         account.setRefreshToken(refreshToken);
-
         accountRepository.save(account);
 
-        RefreshToken savedRefreshToken = refreshTokenRepository.save(RefreshToken.builder()
-            .userId(account.getUserId())
-            .refreshToken(refreshToken)
-            .build());
+        RefreshToken savedRefreshToken = refreshTokenService.saveRefreshToken(refreshToken, account);
 
         response.getWriter().write(objectMapper.writeValueAsString(SignInResponse.builder()
             .jwtToken(jwtToken)
-            .refreshToken(refreshToken)
+            .refreshToken(savedRefreshToken.getRefreshToken())
             .build()));
     }
 }

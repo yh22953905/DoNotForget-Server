@@ -1,4 +1,4 @@
-package com.hungrybrothers.alarmforsubscription.redis;
+package com.hungrybrothers.alarmforsubscription.redis.config;
 
 import org.springframework.boot.autoconfigure.data.redis.RedisProperties;
 import org.springframework.context.annotation.Bean;

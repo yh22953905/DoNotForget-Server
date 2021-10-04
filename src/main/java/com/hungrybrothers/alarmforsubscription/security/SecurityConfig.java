@@ -12,7 +12,7 @@ import org.springframework.security.config.http.SessionCreationPolicy;
 import com.fasterxml.jackson.databind.ObjectMapper;
 import com.hungrybrothers.alarmforsubscription.account.AccountRepository;
 import com.hungrybrothers.alarmforsubscription.common.Const;
-import com.hungrybrothers.alarmforsubscription.sign.RefreshTokenRepository;
+import com.hungrybrothers.alarmforsubscription.redis.refreshtoken.RefreshTokenService;
 
 import lombok.RequiredArgsConstructor;
 
@@ -23,7 +23,7 @@ public class SecurityConfig extends WebSecurityConfigurerAdapter {
     private final JwtTokenProvider jwtTokenProvider;
     private final ObjectMapper objectMapper;
     private final AccountRepository accountRepository;
-    private final RefreshTokenRepository refreshTokenRepository;
+    private final RefreshTokenService refreshTokenService;
 
     @Override
     public void configure(WebSecurity web) {
@@ -49,7 +49,7 @@ public class SecurityConfig extends WebSecurityConfigurerAdapter {
             .anyRequest().authenticated();
 
         http
-            .addFilter(new JwtAuthenticationFilter(authenticationManager(), jwtTokenProvider, objectMapper, accountRepository, refreshTokenRepository))
+            .addFilter(new JwtAuthenticationFilter(authenticationManager(), jwtTokenProvider, objectMapper, accountRepository, refreshTokenService))
             .addFilter(new JwtAuthorizationFilter(authenticationManager(), jwtTokenProvider));
     }
 }

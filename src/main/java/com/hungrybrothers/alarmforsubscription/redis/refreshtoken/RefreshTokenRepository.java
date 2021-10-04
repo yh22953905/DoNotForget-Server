@@ -1,4 +1,4 @@
-package com.hungrybrothers.alarmforsubscription.sign;
+package com.hungrybrothers.alarmforsubscription.redis.refreshtoken;
 
 import org.springframework.data.repository.CrudRepository;
 
