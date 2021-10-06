@@ -11,6 +11,7 @@ import java.util.Arrays;
 import java.util.Collection;
 import java.util.Date;
 import java.util.List;
+import java.util.Optional;
 import java.util.Set;
 import java.util.concurrent.TimeUnit;
 
@@ -31,11 +32,16 @@ import org.springframework.data.redis.core.ValueOperations;
 import org.springframework.data.redis.core.ZSetOperations;
 
 import com.hungrybrothers.alarmforsubscription.common.CommonTest;
+import com.hungrybrothers.alarmforsubscription.redis.refreshtoken.RefreshToken;
+import com.hungrybrothers.alarmforsubscription.redis.refreshtoken.RefreshTokenRepository;
 
-@Disabled
+// @Disabled
 public class RedisTest extends CommonTest {
 	@Autowired
 	RedisTemplate redisTemplate;
+
+	@Autowired
+	RefreshTokenRepository refreshTokenRepository;
 
 	@Test
 	@DisplayName("기본 명령어 테스트")
@@ -176,5 +182,29 @@ public class RedisTest extends CommonTest {
 		hyperLogLogOps.add(cacheKey, arr1);
 		assertSame(7L, hyperLogLogOps.size(cacheKey));
 		redisTemplate.delete(cacheKey);
+	}
+
+	@Test
+	@DisplayName("RefreshTokenRepository 만료 시간 테스트")
+	public void refreshTokenRepositoryExpiredAt() throws InterruptedException {
+		SetOperations<String, String> setOps = redisTemplate.opsForSet();
+		HashOperations<String, String, String> hashOps = redisTemplate.opsForHash();
+
+		String aKey = "a";
+		String bKey = "b";
+		String cacheKey = "refreshToken";
+		String aHashKey = String.format(cacheKey + ":%s", aKey);
+		String bHashKey = String.format(cacheKey + ":%s", bKey);
+		String aValue = "a_token";
+		String bValue = "b_token";
+
+		refreshTokenRepository.save(RefreshToken.builder().userId(aKey).refreshToken(aValue).build());
+		refreshTokenRepository.save(RefreshToken.builder().userId(bKey).refreshToken(bValue).build());
+
+		Optional<RefreshToken> optionalAToken = refreshTokenRepository.findById(aKey);
+		Optional<RefreshToken> optionalBToken = refreshTokenRepository.findById(bKey);
+
+		assertTrue(optionalAToken.isPresent());
+		assertTrue(optionalBToken.isPresent());
 	}
 }
