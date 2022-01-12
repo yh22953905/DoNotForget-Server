@@ -30,7 +30,7 @@ public class SubscriptionController {
     private final ModelMapper modelMapper;
 
     @GetMapping(path = "/{id}")
-    public ResponseEntity readSubscription(@PathVariable Long id) {
+    public ResponseEntity<EntityModel<Subscription>> readSubscription(@PathVariable Long id) {
         Subscription subscription = subscriptionRepository.findById(id).orElseThrow(EntityNotFoundException::new);
 
         EntityModel<Subscription> entityModel = CommonResource.modelOf(subscription, subscription.getId(), SubscriptionController.class);
@@ -41,8 +41,8 @@ public class SubscriptionController {
     }
 
     @GetMapping(path = "/account")
-    public ResponseEntity readSubscriptionsByAccount(
-            @PageableDefault(size = 100, page = 0, sort = "nextReminderDateTime") Pageable pageable
+    public ResponseEntity<PagedModel<EntityModel<Subscription>>> readSubscriptionsByAccount(
+            @PageableDefault(size = 100, sort = "nextReminderDateTime") Pageable pageable
             , PagedResourcesAssembler<Subscription> assembler
             , @CurrentAccount Account account
     ) {
@@ -56,8 +56,8 @@ public class SubscriptionController {
     }
 
     @PostMapping
-    public ResponseEntity createSubscription(@RequestBody SubscriptionDto subscriptionDto) {
-        Subscription subscription = modelMapper.map(subscriptionDto, Subscription.class);
+    public ResponseEntity<EntityModel<Subscription>> createSubscription(@RequestBody SubscriptionRequest subscriptionRequest) {
+        Subscription subscription = modelMapper.map(subscriptionRequest, Subscription.class);
 
         Subscription savedSubscription = subscriptionRepository.save(subscription);
 

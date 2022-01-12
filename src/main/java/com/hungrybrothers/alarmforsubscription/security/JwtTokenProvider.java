@@ -1,87 +1,72 @@
 package com.hungrybrothers.alarmforsubscription.security;
 
+import com.auth0.jwt.JWT;
+import com.auth0.jwt.algorithms.Algorithm;
+import com.hungrybrothers.alarmforsubscription.account.Account;
+import com.hungrybrothers.alarmforsubscription.account.AccountAdapter;
 import com.hungrybrothers.alarmforsubscription.account.AccountRepository;
-import com.hungrybrothers.alarmforsubscription.account.AccountService;
 import com.hungrybrothers.alarmforsubscription.common.Const;
-import io.jsonwebtoken.Claims;
-import io.jsonwebtoken.Jws;
-import io.jsonwebtoken.Jwts;
-import io.jsonwebtoken.SignatureAlgorithm;
+import com.hungrybrothers.alarmforsubscription.exception.UserAuthenticationException;
 import lombok.RequiredArgsConstructor;
 import org.springframework.beans.factory.annotation.Value;
-import org.springframework.context.annotation.PropertySource;
 import org.springframework.security.authentication.UsernamePasswordAuthenticationToken;
 import org.springframework.security.core.Authentication;
-import org.springframework.security.core.userdetails.UserDetails;
 import org.springframework.stereotype.Component;
+import org.springframework.util.StringUtils;
 
 import javax.servlet.http.HttpServletRequest;
 import java.util.Date;
-import java.util.Set;
+import java.util.List;
+import java.util.Optional;
+import java.util.stream.Collectors;
 
-@RequiredArgsConstructor
 @Component
-@PropertySource("classpath:application.yml")
+@RequiredArgsConstructor
 public class JwtTokenProvider {
-    @Value("${jwt.secret}")
-    private String secretKey;
-    @Value("${jwt.test-token}")
-    private String testToken;
-    @Value("${jwt.admin-id}")
-    private String adminId;
+    private static final Long TOKEN_EXPIRATION_TIME = 1000L * 60 * 60 * 24 * 30;
 
-    private final Long TOKEN_VALID_TIME = 1000L * 60 * 60 * 24 * 365;
-
-    private final AccountService accountService;
     private final AccountRepository accountRepository;
 
-    public String createToken(String userId, Set<String> roles) {
-        Claims claims = Jwts.claims().setSubject(userId);
-        claims.put("roles", roles);
+    @Value("${jwt.secret}")
+    private String secretKey;
+
+    public String createJwtToken(Account account) {
         Date now = new Date();
-        return Jwts.builder()
-                .setClaims(claims)
-                .setIssuedAt(now)
-                .setExpiration(new Date(now.getTime() + TOKEN_VALID_TIME))
-                .signWith(SignatureAlgorithm.HS256, secretKey)
-                .compact();
-    }
 
-    public Authentication getAuthentication(String token) {
-        String userId = "";
+        List<String> roles = account.getRoles().stream()
+            .map(Enum::name)
+            .collect(Collectors.toList());
 
-        if (token.equals(testToken)) {
-            userId = adminId;
-        } else {
-            userId = getUserId(token);
-        }
-
-        UserDetails userDetails = accountService.loadUserByUsername(userId);
-
-        return new UsernamePasswordAuthenticationToken(userDetails, "", userDetails.getAuthorities());
-    }
-
-    private String getUserId(String token) {
-        Jws<Claims> claimsJws = Jwts.parser().setSigningKey(secretKey).parseClaimsJws(token);
-        Claims claims = claimsJws.getBody();
-        String userId = claims.getSubject();
-        return userId;
+        return JWT.create()
+            .withClaim("userId", account.getUserId())
+            .withClaim("role", roles)
+            .withIssuedAt(now)
+            .withExpiresAt(new Date(now.getTime() + TOKEN_EXPIRATION_TIME))
+            .sign(Algorithm.HMAC256(secretKey));
     }
 
     public String resolveToken(HttpServletRequest request) {
-        return request.getHeader(Const.X_AUTH_TOKEN);
+        return Optional.ofNullable(request.getHeader(Const.REQUEST_HEADER_AUTHORIZATION))
+            .orElse("")
+            .replaceFirst(Const.REQUEST_HEADER_AUTHORIZATION_TYPE, "");
     }
 
-    public Boolean validateToken(String jwtToken) {
-        try {
-            if (jwtToken.equals(testToken)) {
-                return true;
-            }
+    public Authentication getAuthentication(String jwtToken) {
+        AccountAdapter accountAdapter = new AccountAdapter(accountRepository.findByUserId(getEmail(jwtToken))
+            .orElseThrow(UserAuthenticationException::new));
 
-            Jws<Claims> claims = Jwts.parser().setSigningKey(secretKey).parseClaimsJws(jwtToken);
-            return !claims.getBody().getExpiration().before(new Date());
-        } catch (RuntimeException e) {
-            return false;
-        }
+        return new UsernamePasswordAuthenticationToken(accountAdapter, "", accountAdapter.getAuthorities());
+    }
+
+    public boolean validateToken(String jwtToken) {
+        if (!StringUtils.hasText(jwtToken)) return false;
+
+        if (JWT.decode(jwtToken).getExpiresAt().before(new Date())) return false;
+
+        return true;
+    }
+
+    private String getEmail(String jwtToken) {
+        return JWT.decode(jwtToken).getClaim("userId").asString();
     }
 }

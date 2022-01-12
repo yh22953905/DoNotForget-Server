@@ -26,8 +26,8 @@ public class SubscriptionControllerTest extends CommonTest {
                 .nextReminderDateTime(LocalDateTime.now())
                 .build();
 
-        subscription.setCreateUser(admin);
-        subscription.setUpdateUser(admin);
+        subscription.setCreateUser(savedAccount);
+        subscription.setUpdateUser(savedAccount);
         subscription.setCreateDateTime(LocalDateTime.now());
         subscription.setUpdateDateTime(LocalDateTime.now());
 
@@ -39,7 +39,7 @@ public class SubscriptionControllerTest extends CommonTest {
     public void readSubscription() throws Exception {
         mockMvc.perform(
                 get(Const.API_SUBSCRIPTION + "/{id}", testSubscriptionId)
-                        .header(Const.X_AUTH_TOKEN, testToken)
+                        .header(Const.REQUEST_HEADER_AUTHORIZATION, jwtToken)
                         .contentType(MediaType.APPLICATION_JSON)
                         .accept(MediaTypes.HAL_JSON)
         )
@@ -52,7 +52,7 @@ public class SubscriptionControllerTest extends CommonTest {
     public void readSubscriptionsByUser() throws Exception {
         mockMvc.perform(
                 get(Const.API_SUBSCRIPTION + "/account")
-                        .header(Const.X_AUTH_TOKEN, testToken)
+                        .header(Const.REQUEST_HEADER_AUTHORIZATION, jwtToken)
                         .contentType(MediaType.APPLICATION_JSON)
                         .accept(MediaTypes.HAL_JSON)
         )
@@ -63,7 +63,7 @@ public class SubscriptionControllerTest extends CommonTest {
 
     @Test
     public void createSubscription() throws Exception {
-        SubscriptionDto subscriptionDto = SubscriptionDto.builder()
+        SubscriptionRequest subscriptionRequest = SubscriptionRequest.builder()
                 .url("http://www.google.com")
                 .cycle(1000L * 60 * 60 * 24 * 30)
 //                .nextReminderDateTime(LocalDateTime.now())
@@ -71,10 +71,10 @@ public class SubscriptionControllerTest extends CommonTest {
 
         mockMvc.perform(
                 post(Const.API_SUBSCRIPTION)
-                        .header(Const.X_AUTH_TOKEN, testToken)
+                        .header(Const.REQUEST_HEADER_AUTHORIZATION, jwtToken)
                         .contentType(MediaType.APPLICATION_JSON)
                         .accept(MediaTypes.HAL_JSON)
-                        .content(objectMapper.writeValueAsString(subscriptionDto))
+                        .content(objectMapper.writeValueAsString(subscriptionRequest))
         )
                 .andExpect(status().isOk())
                 .andDo(print())

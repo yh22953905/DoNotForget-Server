@@ -7,7 +7,13 @@ import lombok.NoArgsConstructor;
 
 @Data @Builder
 @NoArgsConstructor @AllArgsConstructor
-public class SignDto {
-    private String openIdToken;
-    private String type;
+public class SignUpRequest {
+    // TODO Validation
+    private String userId;
+
+    private String username;
+
+    private String password;
+
+    private String accountRole;
 }
