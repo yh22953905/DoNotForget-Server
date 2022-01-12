@@ -73,12 +73,19 @@ HUNGRY-BROTHERS;
 [[resources-sign]]
 == 회원
 
-[[resources-sign-post]]
+[[resources-sign-up]]
 === 회원 가입
 
 `POST` 요청을 사용해서 회원 가입을 할 수 있다.
 
 operation::sign-up[snippets='http-request,http-response']
+
+[[resources-sign-in]]
+=== 로그인
+
+`POST` 요청을 사용해서 로그인을 할 수 있다.
+
+operation::sign-in[snippets='http-request,http-response']
 
 
 [[resources-subscriptions]]

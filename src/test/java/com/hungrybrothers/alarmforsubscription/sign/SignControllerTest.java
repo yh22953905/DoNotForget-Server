@@ -15,17 +15,17 @@ import static org.springframework.test.web.servlet.result.MockMvcResultMatchers.
 import static org.springframework.test.web.servlet.result.MockMvcResultMatchers.status;
 
 public class SignControllerTest extends CommonTest {
-    private static final String TEST_USER_ID = "user_id@email.com";
-    private static final String TEST_USERNAME = "username";
-    private static final String TEST_PASSWORD = "password";
+    private static final String TEST_USER_ID2 = "user_id@email.com";
+    private static final String TEST_USERNAME2 = "username";
+    private static final String TEST_PASSWORD2 = "password";
 
     @Test
     @DisplayName("회원 가입 - Created")
     void signUpCreated() throws Exception {
         SignUpRequest signUpRequest = SignUpRequest.builder()
-            .userId(TEST_USER_ID)
-            .username(TEST_USERNAME)
-            .password(TEST_PASSWORD)
+            .userId(TEST_USER_ID2)
+            .username(TEST_USERNAME2)
+            .password(TEST_PASSWORD2)
             .accountRole(AccountRole.CLIENT.name())
             .build();
 
@@ -41,5 +41,22 @@ public class SignControllerTest extends CommonTest {
             .andExpect(jsonPath("username").exists())
             .andExpect(jsonPath("password").doesNotExist())
             .andExpect(jsonPath("roles").doesNotExist());
+    }
+
+    @Test
+    @DisplayName("로그인 - OK")
+    void signInOK() throws Exception {
+        SignInRequest signInRequest = SignInRequest.builder()
+            .userId(TEST_USER_ID)
+            .password(TEST_PASSWORD)
+            .build();
+
+        mockMvc.perform(post(Const.API_SIGN + "/in")
+                .contentType(MediaType.APPLICATION_JSON)
+                .accept(MediaTypes.HAL_JSON)
+                .content(objectMapper.writeValueAsString(signInRequest)))
+            .andExpect(status().isOk())
+            .andDo(print())
+            .andDo(document("sign-in"));
     }
 }
