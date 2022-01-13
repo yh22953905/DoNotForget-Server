@@ -3,13 +3,11 @@ package com.hungrybrothers.alarmforsubscription.log;
 import ch.qos.logback.classic.spi.ILoggingEvent;
 import ch.qos.logback.core.UnsynchronizedAppenderBase;
 import com.slack.api.Slack;
-import org.springframework.beans.factory.annotation.Value;
 
 import static com.slack.api.webhook.WebhookPayloads.payload;
 
 public class SlackAppender extends UnsynchronizedAppenderBase<ILoggingEvent> {
-    @Value("${slack.webhook.url}")
-    private String webHookUrl;
+    private String webHookUrl = "https://hooks.slack.com/services/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";
 
     @Override
     protected void append(ILoggingEvent event) {
