@@ -1,19 +1,23 @@
 package com.hungrybrothers.alarmforsubscription.subscription;
 
-import com.hungrybrothers.alarmforsubscription.common.CommonTest;
-import com.hungrybrothers.alarmforsubscription.common.Const;
+import static org.assertj.core.api.Assertions.*;
+import static org.springframework.restdocs.mockmvc.MockMvcRestDocumentation.*;
+import static org.springframework.test.web.servlet.request.MockMvcRequestBuilders.*;
+import static org.springframework.test.web.servlet.result.MockMvcResultHandlers.*;
+import static org.springframework.test.web.servlet.result.MockMvcResultMatchers.*;
+
+import java.time.LocalDateTime;
+
+import javax.persistence.EntityNotFoundException;
+
 import org.junit.jupiter.api.BeforeEach;
+import org.junit.jupiter.api.DisplayName;
 import org.junit.jupiter.api.Test;
 import org.springframework.hateoas.MediaTypes;
 import org.springframework.http.MediaType;
 
-import java.time.LocalDateTime;
-
-import static org.springframework.restdocs.mockmvc.MockMvcRestDocumentation.document;
-import static org.springframework.test.web.servlet.request.MockMvcRequestBuilders.get;
-import static org.springframework.test.web.servlet.request.MockMvcRequestBuilders.post;
-import static org.springframework.test.web.servlet.result.MockMvcResultHandlers.print;
-import static org.springframework.test.web.servlet.result.MockMvcResultMatchers.status;
+import com.hungrybrothers.alarmforsubscription.common.CommonTest;
+import com.hungrybrothers.alarmforsubscription.common.Const;
 
 public class SubscriptionControllerTest extends CommonTest {
     private Long testSubscriptionId;
@@ -36,6 +40,7 @@ public class SubscriptionControllerTest extends CommonTest {
     }
 
     @Test
+    @DisplayName("하나의 구독 정보 조회 성공")
     public void readSubscription() throws Exception {
         mockMvc.perform(
                 get(Const.API_SUBSCRIPTION + "/{id}", testSubscriptionId)
@@ -49,6 +54,7 @@ public class SubscriptionControllerTest extends CommonTest {
     }
 
     @Test
+    @DisplayName("구독 정보 리스트 조회 성공")
     public void readSubscriptionsByUser() throws Exception {
         mockMvc.perform(
                 get(Const.API_SUBSCRIPTION + "/account")
@@ -62,6 +68,7 @@ public class SubscriptionControllerTest extends CommonTest {
     }
 
     @Test
+    @DisplayName("하나의 구독 정보 생성 성공")
     public void createSubscription() throws Exception {
         SubscriptionRequest subscriptionRequest = SubscriptionRequest.builder()
                 .url("http://www.google.com")
@@ -79,5 +86,48 @@ public class SubscriptionControllerTest extends CommonTest {
                 .andExpect(status().isOk())
                 .andDo(print())
                 .andDo(document("create-subscription"));
+    }
+
+    @Test
+    @DisplayName("하나의 구독 정보 수정 성공")
+    public void updateSubscription() throws Exception {
+        SubscriptionRequest subscriptionRequest = SubscriptionRequest.builder()
+            .url("http://www.naver.com")
+            .cycle(1000L * 60 * 60 * 24 * 60)
+            // .nextReminderDateTime(LocalDateTime.now())
+            .build();
+
+        mockMvc.perform(
+                patch(Const.API_SUBSCRIPTION + "/{id}", testSubscriptionId)
+                    .header(Const.REQUEST_HEADER_AUTHORIZATION, jwtToken)
+                    .contentType(MediaType.APPLICATION_JSON)
+                    .accept(MediaTypes.HAL_JSON)
+                    .content(objectMapper.writeValueAsString(subscriptionRequest))
+            )
+            .andExpect(status().isOk())
+            .andDo(print())
+            .andDo(document("update-subscription"));
+
+        Subscription subscription = subscriptionRepository.findById(testSubscriptionId)
+            .orElseThrow(EntityNotFoundException::new);
+
+        assertThat(subscription.getUrl()).isEqualTo(subscriptionRequest.getUrl());
+        assertThat(subscription.getCycle()).isEqualTo(subscriptionRequest.getCycle());
+    }
+
+    @Test
+    @DisplayName("하나의 구독 정보 삭제 성공")
+    public void deleteSubscription() throws Exception {
+        mockMvc.perform(
+                delete(Const.API_SUBSCRIPTION + "/{id}", testSubscriptionId)
+                    .header(Const.REQUEST_HEADER_AUTHORIZATION, jwtToken)
+                    .contentType(MediaType.APPLICATION_JSON)
+                    .accept(MediaTypes.HAL_JSON)
+            )
+            .andExpect(status().isOk())
+            .andDo(print())
+            .andDo(document("delete-subscription"));
+
+        assertThat(subscriptionRepository.existsById(testSubscriptionId)).isFalse();
     }
 }

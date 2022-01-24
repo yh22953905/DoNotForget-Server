@@ -26,6 +26,7 @@ import javax.persistence.EntityNotFoundException;
 @RequestMapping(Const.API_SUBSCRIPTION)
 @RequiredArgsConstructor
 public class SubscriptionController {
+    private final SubscriptionService subscriptionService;
     private final SubscriptionRepository subscriptionRepository;
     private final ModelMapper modelMapper;
 
@@ -64,5 +65,19 @@ public class SubscriptionController {
         EntityModel<Subscription> entityModel = CommonResource.modelOf(savedSubscription, savedSubscription.getId(), SubscriptionController.class);
 
         return ResponseEntity.ok(entityModel);
+    }
+
+    @PatchMapping("/{id}")
+    public ResponseEntity<Object> updateSubscription(@PathVariable Long id, @RequestBody SubscriptionRequest subscriptionRequest) {
+        subscriptionService.updateSubscription(id, subscriptionRequest);
+
+        return ResponseEntity.ok().build();
+    }
+
+    @DeleteMapping("/{id}")
+    public ResponseEntity<Object> deleteSubscription(@PathVariable Long id) {
+        subscriptionService.deleteSubscription(id);
+
+        return ResponseEntity.ok().build();
     }
 }
