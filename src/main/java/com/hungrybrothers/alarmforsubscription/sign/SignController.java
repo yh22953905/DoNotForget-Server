@@ -21,9 +21,4 @@ public class SignController {
 
         return ResponseEntity.ok(signUpAccount);
     }
-
-    @PostMapping("/in")
-    public ResponseEntity<String> signIn(@RequestBody SignInRequest signInRequest) {
-        return ResponseEntity.ok(signService.signIn(signInRequest));
-    }
 }

@@ -29,6 +29,8 @@ public class Account {
     @Enumerated(EnumType.STRING)
     private Set<AccountRole> roles;
 
+    private String refreshToken;
+
     @Override
     public boolean equals(Object o) {
         if (this == o) return true;

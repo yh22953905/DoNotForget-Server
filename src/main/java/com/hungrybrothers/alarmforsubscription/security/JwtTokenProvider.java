@@ -1,34 +1,34 @@
 package com.hungrybrothers.alarmforsubscription.security;
 
-import com.auth0.jwt.JWT;
-import com.auth0.jwt.algorithms.Algorithm;
-import com.hungrybrothers.alarmforsubscription.account.Account;
-import com.hungrybrothers.alarmforsubscription.account.AccountAdapter;
-import com.hungrybrothers.alarmforsubscription.account.AccountRepository;
-import com.hungrybrothers.alarmforsubscription.common.Const;
-import com.hungrybrothers.alarmforsubscription.exception.UserAuthenticationException;
-import lombok.RequiredArgsConstructor;
+import java.util.Date;
+import java.util.List;
+import java.util.Optional;
+import java.util.stream.Collectors;
+
+import javax.servlet.http.HttpServletRequest;
+
 import org.springframework.beans.factory.annotation.Value;
 import org.springframework.security.authentication.UsernamePasswordAuthenticationToken;
 import org.springframework.security.core.Authentication;
 import org.springframework.stereotype.Component;
 import org.springframework.util.StringUtils;
 
-import javax.servlet.http.HttpServletRequest;
-import java.util.Date;
-import java.util.List;
-import java.util.Optional;
-import java.util.stream.Collectors;
+import com.auth0.jwt.JWT;
+import com.auth0.jwt.algorithms.Algorithm;
+import com.hungrybrothers.alarmforsubscription.account.Account;
+import com.hungrybrothers.alarmforsubscription.account.AccountAdapter;
+import com.hungrybrothers.alarmforsubscription.account.AccountRepository;
+import com.hungrybrothers.alarmforsubscription.exception.UserAuthenticationException;
+
+import lombok.RequiredArgsConstructor;
 
 @Component
 @RequiredArgsConstructor
 public class JwtTokenProvider {
-    private static final Long TOKEN_EXPIRATION_TIME = 1000L * 60 * 60 * 24 * 30;
-
     private final AccountRepository accountRepository;
 
     @Value("${jwt.secret}")
-    private String secretKey;
+    private String secretKey; // TODO to JwtProperties.java
 
     public String createJwtToken(Account account) {
         Date now = new Date();
@@ -38,17 +38,26 @@ public class JwtTokenProvider {
             .collect(Collectors.toList());
 
         return JWT.create()
-            .withClaim("userId", account.getUserId())
-            .withClaim("role", roles)
+            .withClaim(JwtProperties.KEY_USER_ID, account.getUserId())
+            .withClaim(JwtProperties.KEY_ROLES, roles) // TODO role -> roles
             .withIssuedAt(now)
-            .withExpiresAt(new Date(now.getTime() + TOKEN_EXPIRATION_TIME))
+            .withExpiresAt(new Date(now.getTime() + JwtProperties.JWT_TOKEN_EXPIRATION_TIME))
+            .sign(Algorithm.HMAC256(secretKey)); // TODO HMAC256 -> HMAC512
+    }
+
+    public String createRefreshToken() {
+        Date now = new Date();
+
+        return JWT.create()
+            .withIssuedAt(now)
+            .withExpiresAt(new Date(now.getTime() + JwtProperties.REFRESH_TOKEN_EXPIRATION_TIME))
             .sign(Algorithm.HMAC256(secretKey));
     }
 
     public String resolveToken(HttpServletRequest request) {
-        return Optional.ofNullable(request.getHeader(Const.REQUEST_HEADER_AUTHORIZATION))
+        return Optional.ofNullable(request.getHeader(JwtProperties.REQUEST_HEADER_AUTHORIZATION))
             .orElse("")
-            .replaceFirst(Const.REQUEST_HEADER_AUTHORIZATION_TYPE, "");
+            .replaceFirst(JwtProperties.REQUEST_HEADER_AUTHORIZATION_TYPE, "");
     }
 
     public Authentication getAuthentication(String jwtToken) {
@@ -61,12 +70,10 @@ public class JwtTokenProvider {
     public boolean validateToken(String jwtToken) {
         if (!StringUtils.hasText(jwtToken)) return false;
 
-        if (JWT.decode(jwtToken).getExpiresAt().before(new Date())) return false;
-
-        return true;
+        return !JWT.decode(jwtToken).getExpiresAt().before(new Date());
     }
 
     private String getEmail(String jwtToken) {
-        return JWT.decode(jwtToken).getClaim("userId").asString();
+        return JWT.decode(jwtToken).getClaim(JwtProperties.KEY_USER_ID).asString();
     }
 }

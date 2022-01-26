@@ -4,6 +4,7 @@ import com.fasterxml.jackson.databind.ObjectMapper;
 import com.hungrybrothers.alarmforsubscription.account.Account;
 import com.hungrybrothers.alarmforsubscription.account.AccountRepository;
 import com.hungrybrothers.alarmforsubscription.account.AccountRole;
+import com.hungrybrothers.alarmforsubscription.security.JwtProperties;
 import com.hungrybrothers.alarmforsubscription.security.JwtTokenProvider;
 import com.hungrybrothers.alarmforsubscription.subscription.SubscriptionRepository;
 import org.junit.jupiter.api.BeforeEach;
@@ -70,6 +71,6 @@ public class CommonTest {
             .roles(roles)
             .build());
 
-        jwtToken = Const.REQUEST_HEADER_AUTHORIZATION_TYPE + jwtTokenProvider.createJwtToken(savedAccount);
+        jwtToken = JwtProperties.REQUEST_HEADER_AUTHORIZATION_TYPE + jwtTokenProvider.createJwtToken(savedAccount);
     }
 }

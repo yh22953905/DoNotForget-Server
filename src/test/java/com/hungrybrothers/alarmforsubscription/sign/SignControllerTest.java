@@ -1,5 +1,6 @@
 package com.hungrybrothers.alarmforsubscription.sign;
 
+import com.hungrybrothers.alarmforsubscription.account.Account;
 import com.hungrybrothers.alarmforsubscription.account.AccountRole;
 import com.hungrybrothers.alarmforsubscription.common.CommonTest;
 import com.hungrybrothers.alarmforsubscription.common.Const;
@@ -7,7 +8,9 @@ import org.junit.jupiter.api.DisplayName;
 import org.junit.jupiter.api.Test;
 import org.springframework.hateoas.MediaTypes;
 import org.springframework.http.MediaType;
+import org.springframework.security.core.userdetails.UsernameNotFoundException;
 
+import static org.assertj.core.api.Assertions.assertThat;
 import static org.springframework.restdocs.mockmvc.MockMvcRestDocumentation.document;
 import static org.springframework.test.web.servlet.request.MockMvcRequestBuilders.post;
 import static org.springframework.test.web.servlet.result.MockMvcResultHandlers.print;
@@ -57,6 +60,13 @@ public class SignControllerTest extends CommonTest {
                 .content(objectMapper.writeValueAsString(signInRequest)))
             .andExpect(status().isOk())
             .andDo(print())
-            .andDo(document("sign-in"));
+            .andDo(document("sign-in"))
+            .andExpect(jsonPath("$.jwtToken").isNotEmpty())
+            .andExpect(jsonPath("$.refreshToken").isNotEmpty());
+
+        Account account = accountRepository.findByUserId(signInRequest.getUserId())
+            .orElseThrow(() -> new UsernameNotFoundException(signInRequest.getUserId()));
+
+        assertThat(account.getRefreshToken()).isNotEmpty();
     }
 }

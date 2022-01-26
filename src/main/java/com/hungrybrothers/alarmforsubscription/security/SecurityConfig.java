@@ -1,31 +1,27 @@
 package com.hungrybrothers.alarmforsubscription.security;
 
-import com.hungrybrothers.alarmforsubscription.account.AccountRole;
-import com.hungrybrothers.alarmforsubscription.common.Const;
-import lombok.RequiredArgsConstructor;
+import com.hungrybrothers.alarmforsubscription.account.AccountRepository;
 import org.springframework.boot.actuate.autoconfigure.security.servlet.EndpointRequest;
 import org.springframework.boot.autoconfigure.security.servlet.PathRequest;
-import org.springframework.context.annotation.Bean;
 import org.springframework.context.annotation.Configuration;
-import org.springframework.security.authentication.AuthenticationManager;
 import org.springframework.security.config.annotation.web.builders.HttpSecurity;
 import org.springframework.security.config.annotation.web.builders.WebSecurity;
 import org.springframework.security.config.annotation.web.configuration.EnableWebSecurity;
 import org.springframework.security.config.annotation.web.configuration.WebSecurityConfigurerAdapter;
 import org.springframework.security.config.http.SessionCreationPolicy;
-import org.springframework.security.web.authentication.UsernamePasswordAuthenticationFilter;
+
+import com.fasterxml.jackson.databind.ObjectMapper;
+import com.hungrybrothers.alarmforsubscription.common.Const;
+
+import lombok.RequiredArgsConstructor;
 
 @Configuration
 @EnableWebSecurity
 @RequiredArgsConstructor
 public class SecurityConfig extends WebSecurityConfigurerAdapter {
-    private final JwtAuthenticationFilter jwtAuthenticationFilter;
-
-    @Bean
-    @Override
-    public AuthenticationManager authenticationManager() throws Exception {
-        return super.authenticationManagerBean();
-    }
+    private final JwtTokenProvider jwtTokenProvider;
+    private final ObjectMapper objectMapper;
+    private final AccountRepository accountRepository;
 
     @Override
     public void configure(WebSecurity web) {
@@ -36,16 +32,20 @@ public class SecurityConfig extends WebSecurityConfigurerAdapter {
     @Override
     protected void configure(HttpSecurity http) throws Exception {
         http
+            .formLogin().disable()
             .httpBasic().disable()
             .csrf().disable()
             .sessionManagement().sessionCreationPolicy(SessionCreationPolicy.STATELESS);
+
         http
             .authorizeRequests()
             .mvcMatchers(Const.API_SIGN + "/**").permitAll()
             .mvcMatchers(Const.ERROR_URL).permitAll()
             .requestMatchers(EndpointRequest.toAnyEndpoint()).permitAll()
-            .anyRequest().hasRole(AccountRole.CLIENT.name())
-            .and()
-            .addFilterBefore(jwtAuthenticationFilter, UsernamePasswordAuthenticationFilter.class);
+            .anyRequest().authenticated();
+
+        http
+            .addFilter(new JwtAuthenticationFilter(authenticationManager(), jwtTokenProvider, objectMapper, accountRepository))
+            .addFilter(new JwtAuthorizationFilter(authenticationManager(), jwtTokenProvider));
     }
 }

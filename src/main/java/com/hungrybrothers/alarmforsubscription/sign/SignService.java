@@ -37,16 +37,4 @@ public class SignService {
             .roles(roles)
             .build());
     }
-
-    @SneakyThrows
-    public String signIn(SignInRequest signInRequest) {
-        Account account = accountRepository.findByUserId(signInRequest.getUserId())
-            .orElseThrow(UserIdPasswordException::new);
-
-        if (!passwordEncoder.matches(signInRequest.getPassword(), account.getPassword())) {
-            throw new UserIdPasswordException();
-        }
-
-        return jwtTokenProvider.createJwtToken(account);
-    }
 }
