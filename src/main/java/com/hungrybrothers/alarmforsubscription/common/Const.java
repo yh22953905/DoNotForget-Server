@@ -8,4 +8,7 @@ public class Const {
     public static final long TIMEOUT = 30L;
 
     public static final String ERROR_MESSAGE_AUTHENTICATION_FAIL = "아이디와 비밀번호를 확인해주세요";
+
+    public static final String LOG_MESSAGE_TOKEN_INVALID = "The token is invalid";
+    public static final String LOG_MESSAGE_TOKEN_EXPIRED = "The token is expired";
 }

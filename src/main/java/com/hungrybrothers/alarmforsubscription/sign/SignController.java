@@ -21,4 +21,9 @@ public class SignController {
 
         return ResponseEntity.ok(signUpAccount);
     }
+
+    @PostMapping("/refresh-token")
+    public ResponseEntity<SignInResponse> refreshToken(@RequestBody RefreshTokenRequest request) {
+        return ResponseEntity.ok(signService.refreshToken(request));
+    }
 }

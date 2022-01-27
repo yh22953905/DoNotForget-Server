@@ -1,5 +1,7 @@
 package com.hungrybrothers.alarmforsubscription.exception;
 
+import org.springframework.http.HttpStatus;
+
 import com.fasterxml.jackson.annotation.JsonFormat;
 
 @JsonFormat(shape = JsonFormat.Shape.OBJECT)
@@ -10,10 +12,11 @@ public enum ErrorCode {
     ENTITY_NOT_FOUND(400, "C003", " Entity Not Found"),
     INTERNAL_SERVER_ERROR(500, "C004", "Server Error"),
     INVALID_TYPE_VALUE(400, "C005", " Invalid Type Value"),
-    HANDLE_ACCESS_DENIED(403, "C006", "Access is Denied")
+    HANDLE_ACCESS_DENIED(403, "C006", "Access is Denied"), // TODO status -> HttpStatus.XXX.value() / message : en -> ko
+    INVALID_TOKEN(HttpStatus.UNAUTHORIZED.value(), "C007", "인증 토큰이 만료되었습니다. 다시 로그인 해주세요.")
     ;
 
-    private int status;
+    private final int status;
     private final String code;
     private final String message;
 
