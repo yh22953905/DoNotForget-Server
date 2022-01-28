@@ -1,6 +1,7 @@
 package com.hungrybrothers.alarmforsubscription.sign;
 
 import java.util.HashSet;
+import java.util.Objects;
 import java.util.Set;
 
 import org.springframework.security.core.userdetails.UsernameNotFoundException;
@@ -13,7 +14,9 @@ import com.hungrybrothers.alarmforsubscription.account.Account;
 import com.hungrybrothers.alarmforsubscription.account.AccountRepository;
 import com.hungrybrothers.alarmforsubscription.account.AccountRole;
 import com.hungrybrothers.alarmforsubscription.exception.ErrorCode;
+import com.hungrybrothers.alarmforsubscription.exception.VerifyCodeException;
 import com.hungrybrothers.alarmforsubscription.security.JwtTokenProvider;
+import com.hungrybrothers.alarmforsubscription.utils.MailUtils;
 
 import lombok.RequiredArgsConstructor;
 import lombok.SneakyThrows;
@@ -25,6 +28,7 @@ public class SignService {
     private final AccountRepository accountRepository;
     private final PasswordEncoder passwordEncoder;
     private final JwtTokenProvider jwtTokenProvider;
+    private final MailUtils mailUtils;
 
     public Account signUp(SignUpRequest signUpRequest) {
         accountRepository.findByUserId(signUpRequest.getUserId()).ifPresent(user -> {
@@ -57,5 +61,24 @@ public class SignService {
         } else {
             throw new JWTVerificationException(ErrorCode.INVALID_TOKEN.getMessage());
         }
+    }
+
+    public void verifyEmail(VerifyEmailRequest request, Account account) {
+        if (Objects.equals(request.getVerifyCode(), account.getVerifyCode())) {
+            account.setVerified(true);
+            accountRepository.save(account);
+            return;
+        }
+
+        throw new VerifyCodeException(ErrorCode.VERIFY_CODE_EXCEPTION);
+    }
+
+    public void sendEmail(Account account) {
+        String code = mailUtils.generateCode();
+
+        mailUtils.sendMail(account.getUserId(), code);
+
+        account.setVerifyCode(code);
+        accountRepository.save(account);
     }
 }

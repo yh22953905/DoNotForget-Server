@@ -7,6 +7,8 @@ import com.hungrybrothers.alarmforsubscription.account.AccountRole;
 import com.hungrybrothers.alarmforsubscription.security.JwtProperties;
 import com.hungrybrothers.alarmforsubscription.security.JwtTokenProvider;
 import com.hungrybrothers.alarmforsubscription.subscription.SubscriptionRepository;
+import com.hungrybrothers.alarmforsubscription.utils.MailUtils;
+
 import org.junit.jupiter.api.BeforeEach;
 import org.junit.jupiter.api.Disabled;
 import org.springframework.beans.factory.annotation.Autowired;
@@ -32,7 +34,7 @@ import java.util.Set;
 @Transactional
 @PropertySource("classpath:application.yml")
 public class CommonTest {
-    protected static final String TEST_USER_ID = "yh22953905@gmail.com";
+    protected static final String TEST_USER_ID = "user_id@email.com";
     protected static final String TEST_USERNAME = "username";
     protected static final String TEST_PASSWORD = "password";
 
@@ -53,6 +55,9 @@ public class CommonTest {
 
     @Autowired
     protected JwtTokenProvider jwtTokenProvider;
+
+    @Autowired
+    protected MailUtils mailUtils;
 
     protected Account savedAccount;
 

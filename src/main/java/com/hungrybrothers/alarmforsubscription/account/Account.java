@@ -31,6 +31,10 @@ public class Account {
 
     private String refreshToken;
 
+    private String verifyCode;
+
+    private boolean verified;
+
     @Override
     public boolean equals(Object o) {
         if (this == o) return true;

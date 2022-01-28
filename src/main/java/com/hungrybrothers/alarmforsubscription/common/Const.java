@@ -11,4 +11,8 @@ public class Const {
 
     public static final String LOG_MESSAGE_TOKEN_INVALID = "The token is invalid";
     public static final String LOG_MESSAGE_TOKEN_EXPIRED = "The token is expired";
+
+    public static final String MAIL_SUBJECT = "[DO-NOT-FORGET] 이메일 인증 코드입니다.";
+    public static final String MAIL_TEXT = "이메일 인증 코드는 '%s' 입니다.";
+    public static final int MAIL_CODE_LENGTH = 6;
 }

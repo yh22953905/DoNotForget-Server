@@ -10,6 +10,7 @@ import static org.springframework.test.web.servlet.result.MockMvcResultMatchers.
 import java.util.Objects;
 
 import org.jetbrains.annotations.NotNull;
+import org.junit.jupiter.api.Disabled;
 import org.junit.jupiter.api.DisplayName;
 import org.junit.jupiter.api.Test;
 import org.springframework.hateoas.MediaTypes;
@@ -23,9 +24,11 @@ import com.hungrybrothers.alarmforsubscription.account.AccountRole;
 import com.hungrybrothers.alarmforsubscription.common.CommonTest;
 import com.hungrybrothers.alarmforsubscription.common.Const;
 import com.hungrybrothers.alarmforsubscription.exception.ErrorCode;
+import com.hungrybrothers.alarmforsubscription.exception.VerifyCodeException;
+import com.hungrybrothers.alarmforsubscription.security.JwtProperties;
 
 public class SignControllerTest extends CommonTest {
-    private static final String TEST_USER_ID2 = "user_id@email.com";
+    private static final String TEST_USER_ID2 = "user_id2@email.com";
     private static final String TEST_USERNAME2 = "username";
     private static final String TEST_PASSWORD2 = "password";
 
@@ -125,6 +128,81 @@ public class SignControllerTest extends CommonTest {
         getRefreshTokenActions(request)
             .andExpect(result -> assertTrue(result.getResolvedException() instanceof JWTVerificationException))
             .andExpect(result -> assertEquals(Objects.requireNonNull(result.getResolvedException()).getMessage(), ErrorCode.INVALID_TOKEN.getMessage()));
+    }
+
+    @Disabled
+    @Test
+    @DisplayName("메일 발송 - OK")
+    void sendEmailOk() throws Exception {
+        // When
+        mockMvc.perform(post(Const.API_SIGN + "/email")
+                .header(JwtProperties.REQUEST_HEADER_AUTHORIZATION, jwtToken)
+                .contentType(MediaType.APPLICATION_JSON)
+                .accept(MediaTypes.HAL_JSON))
+            .andExpect(status().isOk())
+            .andDo(print())
+            .andDo(document("send-email"));
+
+        // Then
+        Account account = accountRepository.findByUserId(savedAccount.getUserId())
+            .orElseThrow(() -> new UsernameNotFoundException(savedAccount.getUserId()));
+
+        assertThat(account.getVerifyCode()).hasSize(6);
+    }
+
+    @Test
+    @DisplayName("이메일 검증 - OK")
+    void verifyEmailOk() throws Exception {
+        // Given
+        String code = mailUtils.generateCode();
+
+        savedAccount.setVerifyCode(code);
+        accountRepository.save(savedAccount);
+
+        // When
+        VerifyEmailRequest request = VerifyEmailRequest.builder().verifyCode(code).build();
+
+        mockMvc.perform(patch(Const.API_SIGN + "/email")
+                .header(JwtProperties.REQUEST_HEADER_AUTHORIZATION, jwtToken)
+                .contentType(MediaType.APPLICATION_JSON)
+                .accept(MediaTypes.HAL_JSON)
+                .content(objectMapper.writeValueAsString(request)))
+            .andExpect(status().isOk())
+            .andDo(print())
+            .andDo(document("verify-email"));
+
+        // Then
+        Account account = accountRepository.findByUserId(savedAccount.getUserId())
+            .orElseThrow(() -> new UsernameNotFoundException(savedAccount.getUserId()));
+
+        assertTrue(account.isVerified());
+    }
+
+    @Test
+    @DisplayName("이메일 검증 - 유효하지 않은 인증 코드")
+    void verifyEmailInvalidVerifyCode() throws Exception {
+        // Given
+        String generatedCode = mailUtils.generateCode();
+        String invalidCode = "123456";
+
+        savedAccount.setVerifyCode(generatedCode);
+        accountRepository.save(savedAccount);
+
+        // When & Then
+        VerifyEmailRequest request = VerifyEmailRequest.builder().verifyCode(invalidCode).build();
+
+        mockMvc.perform(patch(Const.API_SIGN + "/email")
+                .header(JwtProperties.REQUEST_HEADER_AUTHORIZATION, jwtToken)
+                .contentType(MediaType.APPLICATION_JSON)
+                .accept(MediaTypes.HAL_JSON)
+                .content(objectMapper.writeValueAsString(request)))
+            .andExpect(status().isBadRequest())
+            .andExpect(jsonPath("$.message").value(ErrorCode.VERIFY_CODE_EXCEPTION.getMessage()))
+            .andExpect(jsonPath("$.status").value(ErrorCode.VERIFY_CODE_EXCEPTION.getStatus()))
+            .andExpect(jsonPath("$.code").value(ErrorCode.VERIFY_CODE_EXCEPTION.getCode()))
+            .andDo(print())
+            .andExpect(result -> assertTrue(result.getResolvedException() instanceof VerifyCodeException))
+            .andExpect(result -> assertEquals(Objects.requireNonNull(result.getResolvedException()).getMessage(), ErrorCode.VERIFY_CODE_EXCEPTION.getMessage()));
     }
 
     @NotNull
