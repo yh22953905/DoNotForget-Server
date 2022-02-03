@@ -22,16 +22,6 @@ import java.util.Optional;
 @PropertySource("classpath:application.yml")
 public class ApplicationConfig {
     @Bean
-    public ModelMapper modelMapper() {
-        ModelMapper modelMapper = new ModelMapper();
-        modelMapper.getConfiguration()
-                .setDestinationNameTokenizer(NameTokenizers.UNDERSCORE)
-                .setSourceNameTokenizer(NameTokenizers.UNDERSCORE);
-
-        return modelMapper;
-    }
-
-    @Bean
     public ObjectMapper objectMapper() {
         return new ObjectMapper();
     }

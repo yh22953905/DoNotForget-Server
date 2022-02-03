@@ -26,7 +26,7 @@ import java.util.HashSet;
 import java.util.Set;
 
 @SpringBootTest
-@AutoConfigureMockMvc()
+@CustomConfigureMockMvc
 @AutoConfigureRestDocs
 @Import(RestDocsConfiguration.class)
 @ActiveProfiles("test")

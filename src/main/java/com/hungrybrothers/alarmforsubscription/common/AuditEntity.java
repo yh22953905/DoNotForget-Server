@@ -1,6 +1,5 @@
 package com.hungrybrothers.alarmforsubscription.common;
 
-import com.fasterxml.jackson.annotation.JsonProperty;
 import com.hungrybrothers.alarmforsubscription.account.Account;
 import lombok.Getter;
 import lombok.Setter;
@@ -17,7 +16,6 @@ import java.time.LocalDateTime;
 @MappedSuperclass
 @EntityListeners(AuditingEntityListener.class)
 public abstract class AuditEntity {
-    @JsonProperty(access = JsonProperty.Access.WRITE_ONLY)
     @CreatedDate
     @Column(updatable = false)
     private LocalDateTime createDateTime;
@@ -27,7 +25,6 @@ public abstract class AuditEntity {
     @JoinColumn(updatable = false)
     private Account createUser;
 
-    @JsonProperty(access = JsonProperty.Access.WRITE_ONLY)
     @LastModifiedDate
     @Column(insertable = false)
     private LocalDateTime updateDateTime;
@@ -36,6 +33,4 @@ public abstract class AuditEntity {
     @LastModifiedBy
     @JoinColumn(insertable = false)
     private Account updateUser;
-
-
 }

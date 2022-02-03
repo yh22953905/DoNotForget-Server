@@ -1,9 +1,7 @@
 package com.hungrybrothers.alarmforsubscription.sign;
 
-import com.hungrybrothers.alarmforsubscription.account.Account;
-import com.hungrybrothers.alarmforsubscription.account.AccountAdapter;
-import com.hungrybrothers.alarmforsubscription.common.Const;
-import lombok.RequiredArgsConstructor;
+import javax.validation.Valid;
+
 import org.springframework.http.ResponseEntity;
 import org.springframework.security.core.annotation.AuthenticationPrincipal;
 import org.springframework.stereotype.Controller;
@@ -12,6 +10,12 @@ import org.springframework.web.bind.annotation.PostMapping;
 import org.springframework.web.bind.annotation.RequestBody;
 import org.springframework.web.bind.annotation.RequestMapping;
 
+import com.hungrybrothers.alarmforsubscription.account.Account;
+import com.hungrybrothers.alarmforsubscription.account.AccountAdapter;
+import com.hungrybrothers.alarmforsubscription.common.Const;
+
+import lombok.RequiredArgsConstructor;
+
 @Controller
 @RequestMapping(Const.API_SIGN)
 @RequiredArgsConstructor
@@ -19,10 +23,8 @@ public class SignController {
     private final SignService signService;
 
     @PostMapping("/up")
-    public ResponseEntity<Account> signUp(@RequestBody SignUpRequest signUpRequest) {
-        Account signUpAccount = signService.signUp(signUpRequest);
-
-        return ResponseEntity.ok(signUpAccount);
+    public ResponseEntity<SignUpResponse> signUp(@Valid @RequestBody SignUpRequest signUpRequest) {
+        return ResponseEntity.ok(signService.signUp(signUpRequest));
     }
 
     @PostMapping("/refresh-token")

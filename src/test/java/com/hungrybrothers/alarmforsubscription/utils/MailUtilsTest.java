@@ -11,7 +11,7 @@ import org.springframework.mail.MailException;
 import com.hungrybrothers.alarmforsubscription.common.CommonTest;
 
 public class MailUtilsTest extends CommonTest {
-	private final String VALID_EMAIL = "yh22953905@gmail.com";
+	private final String VALID_EMAIL = "user_id@email.com";
 	private final String INVALID_EMAIL = "invalid-email";
 
 	@Disabled
@@ -21,6 +21,7 @@ public class MailUtilsTest extends CommonTest {
 		mailUtils.sendMail(VALID_EMAIL, mailUtils.generateCode());
 	}
 
+	@Disabled
 	@Test
 	@DisplayName("메일 발송 - 유효하지 않은 이메일 주소")
 	public void sendMailInvalidEmailAddress() {

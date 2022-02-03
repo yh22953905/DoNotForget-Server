@@ -60,6 +60,55 @@ HUNGRY-BROTHERS;
 | 요청한 리소스가 없음.
 |===
 
+[[overview-error-codes]]
+== 에러 코드
+
+에러 코드 목록입니다.
+
+|===
+| 상태 코드 | 에러 코드 | 메시지
+
+| 400
+| C001
+| 잘못된 요청입니다. 관리자에게 문의하세요.
+
+| 405
+| C002
+| 비정상 요청입니다. 관리자에게 문의하세요.
+
+| 400
+| C003
+| 요청하신 사항을 찾을 수 없습니다.
+
+| 500
+| C004
+| 서버 오류입니다. 관리자에게 문의하세요.
+
+| 400
+| C005
+| 잘못된 요청입니다. 관리자에게 문의하세요.
+
+| 403
+| C006
+| 권한이 없습니다. 관리자에게 문의하세요.
+
+| 401
+| C007
+| 인증 토큰이 만료되었습니다. 다시 로그인 해주세요.
+
+| 400
+| C008
+| 이메일 주소가 유효하지 않습니다. 이메일 주소를 확인해주세요.
+
+| 400
+| C009
+| 인증 코드가 유효하지 않습니다. 인증 코드를 확인해주세요.
+
+| 400
+| C010
+| 이미 존재하는 아이디입니다. 이메일을 확인해주세요.
+|===
+
 [[overview-hypermedia]]
 == 하이퍼미디어
 
@@ -70,6 +119,16 @@ HUNGRY-BROTHERS;
 [[resources]]
 = 리소스
 
+[[resources-hateoas]]
+== HATEOAS
+
+[[resources-read-indices]]
+=== HATEOAS 인덱스 조회 성공
+
+`GET` 요청을 사용해서 HATEOAS 인덱스들을 조회할 수 있다.
+
+operation::read-indices[snippets='http-request,http-response']
+
 [[resources-sign]]
 == 회원
 
@@ -79,6 +138,13 @@ HUNGRY-BROTHERS;
 `POST` 요청을 사용해서 회원 가입을 할 수 있다.
 
 operation::sign-up[snippets='http-request,http-response']
+
+[[resources-sign-up-invalid]]
+=== 회원 가입 - 아이디, 닉네임, 비밀번호가 유효하지 않은 경우
+
+회원 가입은 이메일, 닉네임, 비밀번호 형식에 맞는 값으로 해야 한다.
+
+operation::sign-up-invalid[snippets='http-request,http-response']
 
 [[resources-sign-in]]
 === 로그인

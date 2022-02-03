@@ -15,7 +15,6 @@ import java.util.Objects;
 @Builder @AllArgsConstructor @NoArgsConstructor
 @Getter @Setter
 @Entity
-@JsonIdentityInfo(generator = ObjectIdGenerators.PropertyGenerator.class, property = "id")
 public class Subscription extends AuditEntity {
     @Id @GeneratedValue
     private Long id;

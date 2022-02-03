@@ -4,11 +4,14 @@ import lombok.AccessLevel;
 import lombok.Getter;
 import lombok.NoArgsConstructor;
 import org.springframework.validation.BindingResult;
+import org.springframework.web.bind.MethodArgumentNotValidException;
 import org.springframework.web.method.annotation.MethodArgumentTypeMismatchException;
 
 import java.util.ArrayList;
 import java.util.List;
 import java.util.stream.Collectors;
+
+import com.hungrybrothers.alarmforsubscription.common.Const;
 
 @Getter
 @NoArgsConstructor(access = AccessLevel.PROTECTED)
@@ -33,6 +36,13 @@ public class ErrorResponse {
         this.errors = new ArrayList<>();
     }
 
+    private ErrorResponse(ErrorCode code, String message) {
+        this.message = message;
+        this.status = code.getStatus();
+        this.code = code.getCode();
+        this.errors = new ArrayList<>();
+    }
+
     public static ErrorResponse of(ErrorCode code, final BindingResult bindingResult) {
         return new ErrorResponse(code, FieldError.of(bindingResult));
     }
@@ -49,6 +59,20 @@ public class ErrorResponse {
         final String value = e.getValue() == null ? "" : e.getValue().toString();
         final List<FieldError> errors = FieldError.of(e.getName(), value, e.getErrorCode());
         return new ErrorResponse(ErrorCode.INVALID_TYPE_VALUE, errors);
+    }
+
+    public static ErrorResponse of(MethodArgumentNotValidException e) {
+        StringBuilder message = new StringBuilder();
+
+        e.getAllErrors().forEach(error -> {
+            message.append(error.getDefaultMessage());
+            message.append(Const.LINE_FEED);
+        });
+
+        int lastIndex = message.lastIndexOf(Const.LINE_FEED);
+        message.delete(lastIndex, lastIndex + 2);
+
+        return new ErrorResponse(ErrorCode.INVALID_INPUT_VALUE, message.toString());
     }
 
     @Getter
