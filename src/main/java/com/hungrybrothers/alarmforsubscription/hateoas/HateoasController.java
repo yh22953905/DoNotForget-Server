@@ -21,12 +21,16 @@ import lombok.extern.slf4j.Slf4j;
 @RequiredArgsConstructor
 public class HateoasController {
 	@GetMapping
-	public ResponseEntity<RepresentationModel> getIndices() {
-		RepresentationModel representationModel = new RepresentationModel();
+	public ResponseEntity<RepresentationModel<?>> getIndices() {
+		return ResponseEntity.ok(getRepresentationModel());
+	}
 
-		representationModel.add(linkTo(SignController.class).withRel("sign"));
-		representationModel.add(linkTo(SubscriptionController.class).withRel("subscriptions"));
+	private RepresentationModel<?> getRepresentationModel() {
+		RepresentationModel<?> representationModel = new RepresentationModel<>();
 
-		return ResponseEntity.ok(representationModel);
+		representationModel.add(linkTo(SignController.class).withRel(Const.HATEOAS_SIGN));
+		representationModel.add(linkTo(SubscriptionController.class).withRel(Const.HATEOAS_SUBSCRIPTIONS));
+
+		return representationModel;
 	}
 }

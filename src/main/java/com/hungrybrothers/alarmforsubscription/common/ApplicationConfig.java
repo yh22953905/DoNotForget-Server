@@ -1,10 +1,7 @@
 package com.hungrybrothers.alarmforsubscription.common;
 
-import com.fasterxml.jackson.databind.ObjectMapper;
-import com.hungrybrothers.alarmforsubscription.account.Account;
-import com.hungrybrothers.alarmforsubscription.account.AccountAdapter;
-import org.modelmapper.ModelMapper;
-import org.modelmapper.convention.NameTokenizers;
+import java.util.Optional;
+
 import org.springframework.boot.web.embedded.tomcat.TomcatServletWebServerFactory;
 import org.springframework.boot.web.servlet.server.ConfigurableServletWebServerFactory;
 import org.springframework.context.annotation.Bean;
@@ -16,16 +13,12 @@ import org.springframework.security.core.context.SecurityContextHolder;
 import org.springframework.security.crypto.factory.PasswordEncoderFactories;
 import org.springframework.security.crypto.password.PasswordEncoder;
 
-import java.util.Optional;
+import com.hungrybrothers.alarmforsubscription.account.Account;
+import com.hungrybrothers.alarmforsubscription.account.AccountAdapter;
 
 @Configuration
 @PropertySource("classpath:application.yml")
 public class ApplicationConfig {
-    @Bean
-    public ObjectMapper objectMapper() {
-        return new ObjectMapper();
-    }
-
     @Bean
     public PasswordEncoder passwordEncoder() {
         return PasswordEncoderFactories.createDelegatingPasswordEncoder();
@@ -44,7 +37,7 @@ public class ApplicationConfig {
     }
 
     @Bean
-    public AuditorAware auditorAware() {
+    public AuditorAware<Account> auditorAware() {
         return () -> {
             Optional<Authentication> optionalAuthentication = Optional.ofNullable(SecurityContextHolder.getContext().getAuthentication());
 
